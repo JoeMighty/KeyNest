@@ -37,6 +37,30 @@ const portals = [
     description: "A modern, AI-powered property search engine that reads floorplans and lets you search for highly specific features.",
     color: "from-emerald-500 to-teal-700",
   },
+  {
+    name: "Purplebricks",
+    url: "https://www.purplebricks.co.uk",
+    description: "The UK's leading online estate agent. You can sometimes find properties here listed directly by the sellers.",
+    color: "from-purple-500 to-fuchsia-700",
+  },
+  {
+    name: "Home.co.uk",
+    url: "https://www.home.co.uk",
+    description: "A comprehensive property search engine with extensive market data, average asking prices, and time-on-market metrics.",
+    color: "from-sky-500 to-sky-700",
+  },
+  {
+    name: "PropertyPal",
+    url: "https://www.propertypal.com",
+    description: "The number one property portal for Northern Ireland, featuring almost every home for sale in the region.",
+    color: "from-rose-500 to-rose-700",
+  },
+  {
+    name: "Auction House",
+    url: "https://www.auctionhouse.co.uk",
+    description: "The UK's largest property auction company. Ideal for finding renovation projects or below-market-value homes.",
+    color: "from-orange-500 to-orange-700",
+  },
 ];
 
 export default function PortalsPage() {
