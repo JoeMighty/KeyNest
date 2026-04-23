@@ -257,7 +257,6 @@ export default function MonthlyCostPage() {
                     >
                       <PlusCircle className="w-4 h-4 mr-2" /> Add Custom Cost
                     </Button>
-                  </div>
                 </CardContent>
               </Card>
             </div>
