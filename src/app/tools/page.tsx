@@ -53,6 +53,13 @@ const categories = [
       { name: "Offer Letter Generator", href: "/offer-letter", desc: "Professional bidding documents.", status: "live" },
       { name: "Moving Cost Estimator", href: "/moving-costs", desc: "Budget for the final push.", status: "live", icon: Truck },
     ]
+  },
+  {
+    title: "Neighborhood Insights",
+    icon: Home,
+    tools: [
+      { name: "Local Crime Checker", href: "/crime-checker", desc: "Official safety stats and interactive map.", status: "live", icon: ShieldAlert },
+    ]
   }
 ];
 
