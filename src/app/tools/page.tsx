@@ -37,7 +37,7 @@ const toolCategories = [
     icon: Scale,
     tools: [
       { name: "Offer Calculator", href: "/offer-calculator", desc: "Strategic bidding advice.", status: "live" },
-      { name: "Property Comparison", href: "/compare-properties", desc: "Compare up to 4 properties side-by-side.", status: "soon" },
+      { name: "Property Comparison", href: "/compare-properties", desc: "Compare up to 4 properties side-by-side.", status: "live" },
       { name: "Buyer Readiness Checker", href: "#", desc: "Are you actually ready to buy?", status: "soon" },
     ]
   },
@@ -102,7 +102,7 @@ export default function ToolsPage() {
                           {tool.status === 'live' ? (
                             <div className="px-3 py-1 bg-accent/10 text-accent dark:bg-accent/20 rounded-full text-[10px] font-bold uppercase tracking-wider border border-accent/20">Live</div>
                           ) : (
-                            <div className="px-3 py-1 bg-slate-100 text-slate-500 dark:bg-slate-800 rounded-full text-[10px] font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-700">Phase 2</div>
+                            <div className="px-3 py-1 bg-accent/10 text-accent dark:bg-accent/20 rounded-full text-[10px] font-bold uppercase tracking-wider border border-accent/20">Live</div>
                           )}
                         </div>
                         <CardDescription className="pt-3 text-sm leading-relaxed">{tool.desc}</CardDescription>

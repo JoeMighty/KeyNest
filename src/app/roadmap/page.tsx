@@ -16,13 +16,13 @@ const roadmapData = [
       "Offer Strategy Calculator",
       "FTB Checklist Generator (PDF)",
       "Offer Letter Generator",
+      "Property Comparison Tool",
     ]
   },
   {
     phase: "Phase 2: Decision Support",
     status: "in-progress",
     items: [
-      "Property Comparison Tool (Multi-property)",
       "Mortgage Overpayment Calculator",
       "Deposit Savings Timeline",
       "House Viewing Checklist (PDF)",
