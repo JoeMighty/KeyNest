@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { calculateOfferStrategy } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
 import { Target, TrendingUp, TrendingDown, Minus, CheckCircle2, XCircle } from "lucide-react";
+import Link from "next/link";
 
 export default function OfferCalculatorPage() {
   const [askingPrice, setAskingPrice] = useState<number>(350000);
@@ -153,7 +154,9 @@ export default function OfferCalculatorPage() {
                 </CardContent>
                 
                 <div className="bg-muted/50 p-6 border-t flex gap-4">
-                  <Button className="w-full">Generate Offer Letter</Button>
+                  <Button asChild className="w-full">
+                    <Link href="/offer-letter">Generate Offer Letter</Link>
+                  </Button>
                   <Button variant="outline" className="w-full">Save Strategy</Button>
                 </div>
               </Card>
