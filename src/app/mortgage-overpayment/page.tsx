@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { calculateOverpayment } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
-import { Download, TrendingDown, Clock, PiggyBank, Leaf } from "lucide-react";
+import { Download, TrendingDown, Clock } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
@@ -19,46 +19,40 @@ export default function OverpaymentPage() {
   const [term, setTerm] = useState<number>(25);
   const [monthlyOverpayment, setMonthlyOverpayment] = useState<number>(200);
   const [lumpSum, setLumpSum] = useState<number>(0);
-  const [isEco, setIsEco] = useState(false);
 
   const result = useMemo(() => {
     return calculateOverpayment(balance, rate, term, monthlyOverpayment, lumpSum);
   }, [balance, rate, term, monthlyOverpayment, lumpSum]);
 
-  const downloadPDF = (ecoMode: boolean = false) => {
+  const downloadPDF = () => {
     const doc = new jsPDF();
     
-    if (!ecoMode) {
-      doc.setFillColor(37, 99, 235);
-      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.text("K", 26, 23, { align: "center" });
-    }
-    
-    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
-    doc.setFontSize(22);
+    // Minimal Branded Header
+    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("KeyNest", ecoMode ? 20 : 35, 25);
+    doc.text("KeyNest", 20, 25);
     
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-    doc.text("Mortgage Overpayment Analysis", 20, 38);
+    doc.setTextColor(100);
+    doc.text("- Mortgage Overpayment Analysis", 48, 25);
+    
+    doc.setDrawColor(230);
+    doc.line(20, 35, 190, 35);
 
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(`Current Balance: ${formatCurrency(balance)}`, 20, 52);
-    doc.text(`Interest Rate: ${rate}% | Original Term: ${term} Years`, 20, 59);
-    doc.text(`Extra Monthly Payment: ${formatCurrency(monthlyOverpayment)}`, 20, 66);
+    doc.text(`Current Balance: ${formatCurrency(balance)}`, 20, 50);
+    doc.text(`Interest Rate: ${rate}% | Original Term: ${term} Years`, 20, 57);
+    doc.text(`Extra Monthly Payment: ${formatCurrency(monthlyOverpayment)}`, 20, 64);
     
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text(`Total Interest Saved: ${formatCurrency(result.savings)}`, 20, 80);
-    doc.text(`Time Saved: ${result.yearsSaved} Years, ${result.monthsSaved} Months`, 20, 90);
+    doc.text(`Total Interest Saved: ${formatCurrency(result.savings)}`, 20, 78);
+    doc.text(`Time Saved: ${result.yearsSaved} Years, ${result.monthsSaved} Months`, 20, 88);
     
-    doc.save(`KeyNest_Overpayment_${ecoMode ? 'eco' : 'full'}.pdf`);
+    doc.save(`KeyNest_Overpayment.pdf`);
     toast.success("PDF Downloaded!");
   };
 
@@ -184,13 +178,10 @@ export default function OverpaymentPage() {
                   </div>
                 </CardContent>
                 
-                <div className="bg-muted/50 p-6 border-t flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                  <div className="flex items-center gap-2 bg-background p-1 rounded-xl border">
-                    <Button variant={!isEco ? "secondary" : "ghost"} size="sm" onClick={() => setIsEco(false)} className="rounded-lg h-10 px-4">Standard</Button>
-                    <Button variant={isEco ? "secondary" : "ghost"} size="sm" onClick={() => setIsEco(true)} className="rounded-lg h-10 px-4 text-green-600 gap-2"><Leaf className="w-3 h-3" /> Eco</Button>
-                    <div className="w-px h-4 bg-border mx-1" />
-                    <Button onClick={() => downloadPDF(isEco)} className="gap-2 h-10 rounded-lg px-6 shadow-lg shadow-primary/10"><Download className="w-4 h-4" /> Download</Button>
-                  </div>
+                <div className="bg-muted/50 p-6 border-t">
+                  <Button onClick={downloadPDF} className="w-full gap-2 h-12 rounded-xl shadow-lg shadow-primary/10">
+                    <Download className="w-4 h-4" /> Download PDF Report
+                  </Button>
                 </div>
               </Card>
             </div>

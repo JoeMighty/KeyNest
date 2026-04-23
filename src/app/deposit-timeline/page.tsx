@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { calculateSavingsTimeline } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
-import { Download, Rocket, PiggyBank, Calendar, Leaf } from "lucide-react";
+import { Download, Rocket, PiggyBank } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
@@ -18,46 +18,40 @@ export default function SavingsTimelinePage() {
   const [current, setCurrent] = useState<number>(10000);
   const [contribution, setContribution] = useState<number>(1000);
   const [rate, setRate] = useState<number>(4.0);
-  const [isEco, setIsEco] = useState(false);
 
   const result = useMemo(() => {
     return calculateSavingsTimeline(target, current, contribution, rate);
   }, [target, current, contribution, rate]);
 
-  const downloadPDF = (ecoMode: boolean = false) => {
+  const downloadPDF = () => {
     const doc = new jsPDF();
     
-    if (!ecoMode) {
-      doc.setFillColor(37, 99, 235);
-      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.text("K", 26, 23, { align: "center" });
-    }
-    
-    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
-    doc.setFontSize(22);
+    // Minimal Branded Header
+    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("KeyNest", ecoMode ? 20 : 35, 25);
+    doc.text("KeyNest", 20, 25);
     
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-    doc.text("Deposit Savings Timeline", 20, 38);
+    doc.setTextColor(100);
+    doc.text("- Deposit Savings Timeline", 48, 25);
+    
+    doc.setDrawColor(230);
+    doc.line(20, 35, 190, 35);
 
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(`Target Deposit: ${formatCurrency(target)}`, 20, 52);
-    doc.text(`Current Savings: ${formatCurrency(current)}`, 20, 59);
-    doc.text(`Monthly Contribution: ${formatCurrency(contribution)}`, 20, 66);
+    doc.text(`Target Deposit: ${formatCurrency(target)}`, 20, 50);
+    doc.text(`Current Savings: ${formatCurrency(current)}`, 20, 57);
+    doc.text(`Monthly Contribution: ${formatCurrency(contribution)}`, 20, 64);
     
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text(`Goal Reached in: ${result.monthsToTarget} Months`, 20, 80);
-    doc.text(`Approx. Date: ${new Date(new Date().setMonth(new Date().getMonth() + result.monthsToTarget)).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}`, 20, 90);
+    doc.text(`Goal Reached in: ${result.monthsToTarget} Months`, 20, 78);
+    doc.text(`Approx. Date: ${new Date(new Date().setMonth(new Date().getMonth() + result.monthsToTarget)).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}`, 20, 88);
     
-    doc.save(`KeyNest_Savings_Timeline_${ecoMode ? 'eco' : 'full'}.pdf`);
+    doc.save(`KeyNest_Savings_Timeline.pdf`);
     toast.success("PDF Downloaded!");
   };
 
@@ -160,13 +154,10 @@ export default function SavingsTimelinePage() {
                   </div>
                 </div>
                 
-                <div className="bg-white/5 p-6 border-t border-white/10 flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                  <div className="flex items-center gap-2 bg-slate-950 p-1 rounded-xl border border-white/10">
-                    <Button variant={!isEco ? "secondary" : "ghost"} size="sm" onClick={() => setIsEco(false)} className="rounded-lg h-10 px-4">Standard</Button>
-                    <Button variant={isEco ? "secondary" : "ghost"} size="sm" onClick={() => setIsEco(true)} className="rounded-lg h-10 px-4 text-green-400 gap-2"><Leaf className="w-3 h-3" /> Eco</Button>
-                    <div className="w-px h-4 bg-white/10 mx-1" />
-                    <Button onClick={() => downloadPDF(isEco)} className="gap-2 h-10 rounded-lg px-6 bg-primary text-white hover:bg-primary/90"><Download className="w-4 h-4" /> Download</Button>
-                  </div>
+                <div className="bg-white/5 p-6 border-t border-white/10">
+                  <Button onClick={downloadPDF} className="w-full gap-2 h-12 rounded-xl bg-primary text-white hover:bg-primary/90 shadow-xl shadow-primary/20">
+                    <Download className="w-4 h-4" /> Download PDF Report
+                  </Button>
                 </div>
               </Card>
 

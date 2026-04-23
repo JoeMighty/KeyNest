@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Property, PropertyCard } from "@/components/tools/property-card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, ArrowRightLeft, LayoutGrid, Download, Trash2, Leaf } from "lucide-react";
+import { PlusCircle, ArrowRightLeft, LayoutGrid, Download, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -15,7 +15,6 @@ const STORAGE_KEY = "keynest_property_comparison";
 export default function ComparePropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [mounted, setMounted] = useState(false);
-  const [isEco, setIsEco] = useState(false);
 
   // Load from localStorage
   useEffect(() => {
@@ -71,42 +70,28 @@ export default function ComparePropertiesPage() {
     }
   };
 
-  const downloadComparison = (ecoMode: boolean = false) => {
+  const downloadComparison = () => {
     const doc = new jsPDF("l", "mm", "a4");
-    const primaryColor = ecoMode ? [50, 50, 50] : [37, 99, 235]; // Slate vs Blue
     
-    // Header Branding
-    if (!ecoMode) {
-      // Draw Logo
-      doc.setFillColor(37, 99, 235);
-      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.text("K", 26, 23, { align: "center" });
-    }
-    
-    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
+    // Minimal Branded Header
+    doc.setTextColor(37, 99, 235);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("KeyNest", ecoMode ? 20 : 35, 24);
+    doc.text("KeyNest", 20, 25);
     
-    doc.setTextColor(100, 100, 100);
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Property Comparison Report", 20, 38);
+    doc.setTextColor(100);
+    doc.text("- Property Comparison Report", 48, 25);
     
-    if (ecoMode) {
-      doc.setTextColor(34, 197, 94);
-      doc.setFontSize(8);
-      doc.text("Eco-friendly Edition", 20, 42);
-    }
+    doc.setDrawColor(230);
+    doc.line(20, 35, 277, 35);
 
     let x = 20;
     let y = 60;
     
     // Table Headers
-    doc.setFillColor(ecoMode ? 240 : 248, ecoMode ? 240 : 250, ecoMode ? 240 : 255);
+    doc.setFillColor(248, 250, 255);
     doc.rect(20, y - 7, 257, 10, "F");
     
     doc.setTextColor(0, 0, 0);
@@ -147,10 +132,10 @@ export default function ComparePropertiesPage() {
     // Footer
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
-    doc.text(`Generated on ${new Date().toLocaleDateString()} via KeyNest. No login required.`, 20, 200);
+    doc.text(`Generated via KeyNest. No login required.`, 20, 200);
     
-    doc.save(`KeyNest_Comparison_${ecoMode ? 'eco' : 'full'}.pdf`);
-    toast.success(`${ecoMode ? 'Eco' : 'Standard'} PDF Downloaded!`);
+    doc.save(`KeyNest_Comparison.pdf`);
+    toast.success(`PDF Downloaded!`);
   };
 
   if (!mounted) return null;
@@ -167,35 +152,16 @@ export default function ComparePropertiesPage() {
               <p className="text-muted-foreground text-lg">Make an informed decision by comparing your top choices side-by-side.</p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={addProperty} className="gap-2 h-12 rounded-xl px-6 shadow-lg shadow-primary/20">
+              <Button onClick={addProperty} className="gap-2 h-14 rounded-xl px-6 shadow-lg shadow-primary/20">
                 <PlusCircle className="w-5 h-5" /> Add Property
               </Button>
               {properties.length > 0 && (
-                <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-xl border">
-                   <Button 
-                    variant={!isEco ? "secondary" : "ghost"} 
-                    size="sm" 
-                    onClick={() => setIsEco(false)}
-                    className="rounded-lg gap-2"
-                   >
-                    Standard
-                   </Button>
-                   <Button 
-                    variant={isEco ? "secondary" : "ghost"} 
-                    size="sm" 
-                    onClick={() => setIsEco(true)}
-                    className="rounded-lg gap-2 text-green-600 dark:text-green-400"
-                   >
-                    <Leaf className="w-3 h-3" /> Eco-Friendly
-                   </Button>
-                   <div className="w-px h-4 bg-border mx-1" />
-                   <Button variant="ghost" size="sm" onClick={() => downloadComparison(isEco)} className="gap-2 rounded-lg">
-                    <Download className="w-4 h-4" /> Download
-                   </Button>
-                </div>
+                <Button onClick={downloadComparison} className="gap-2 h-14 rounded-xl px-6 shadow-lg shadow-primary/10" variant="outline">
+                  <Download className="w-4 h-4" /> Download PDF
+                </Button>
               )}
               {properties.length > 0 && (
-                <Button variant="ghost" onClick={clearAll} className="text-destructive gap-2 h-12 rounded-xl">
+                <Button variant="ghost" onClick={clearAll} className="text-destructive gap-2 h-14 rounded-xl">
                   <Trash2 className="w-4 h-4" /> Clear All
                 </Button>
               )}

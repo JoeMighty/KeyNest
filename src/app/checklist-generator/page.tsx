@@ -1,18 +1,17 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ftbChecklist } from "@/data/checklists";
-import { CheckSquare, Download, ListTodo, Leaf } from "lucide-react";
+import { CheckSquare, Download, ListTodo } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
 export default function ChecklistPage() {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
-  const [isEco, setIsEco] = useState(false);
 
   const toggleItem = (id: string) => {
     setCheckedItems(prev => 
@@ -20,25 +19,22 @@ export default function ChecklistPage() {
     );
   };
 
-  const downloadPDF = (ecoMode: boolean = false) => {
+  const downloadPDF = () => {
     const doc = new jsPDF();
     
-    // Minimal Header Branding
-    doc.setTextColor(0, 0, 0);
+    // Minimal Branded Header
+    doc.setTextColor(37, 99, 235); // KeyNest Blue
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.text("KeyNest", 20, 25);
     
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(120, 120, 120);
-    doc.text("First-Time Buyer Checklist", 20, 32);
+    doc.setTextColor(100);
+    doc.text("- First-Time Buyer Checklist", 48, 25);
     
-    if (ecoMode) {
-      doc.setTextColor(34, 197, 94);
-      doc.setFontSize(8);
-      doc.text("Eco-friendly Edition", 20, 36);
-    }
+    doc.setDrawColor(230);
+    doc.line(20, 35, 190, 35);
 
     const categories = ["Financials", "Search", "Legal", "Completion"];
     let y = 50;
@@ -54,11 +50,10 @@ export default function ChecklistPage() {
       items.forEach(item => {
         const isChecked = checkedItems.includes(item.id);
         
-        // Draw Minimal Checkbox
         doc.setDrawColor(200);
         doc.rect(20, y - 4, 4, 4);
         if (isChecked) {
-          doc.setDrawColor(0, 0, 0);
+          doc.setDrawColor(37, 99, 235);
           doc.line(20, y - 4, 24, y);
           doc.line(24, y - 4, 20, y);
         }
@@ -83,9 +78,8 @@ export default function ChecklistPage() {
       y += 5;
     });
     
-    // Minimal Footer
     doc.setFontSize(8);
-    doc.setTextColor(180, 180, 180);
+    doc.setTextColor(180);
     doc.text(`Generated via KeyNest. No login required.`, 20, 285);
     
     doc.save(`KeyNest_Checklist.pdf`);
@@ -105,12 +99,9 @@ export default function ChecklistPage() {
               <h1 className="text-3xl md:text-5xl font-bold mb-3">First-Time Buyer Checklist</h1>
               <p className="text-muted-foreground text-lg">Track your progress from saving for a deposit to collecting your keys.</p>
             </div>
-            <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-xl border">
-              <Button variant={!isEco ? "secondary" : "ghost"} size="sm" onClick={() => setIsEco(false)} className="rounded-lg h-10 px-4">Standard</Button>
-              <Button variant={isEco ? "secondary" : "ghost"} size="sm" onClick={() => setIsEco(true)} className="rounded-lg h-10 px-4 text-green-600 gap-2"><Leaf className="w-3 h-3" /> Eco</Button>
-              <div className="w-px h-4 bg-border mx-1" />
-              <Button onClick={() => downloadPDF(isEco)} className="gap-2 h-10 rounded-lg px-6 shadow-lg shadow-primary/10 bg-primary text-white hover:bg-primary/90"><Download className="w-4 h-4" /> Download</Button>
-            </div>
+            <Button onClick={downloadPDF} size="lg" className="gap-2 h-14 rounded-2xl px-8 shadow-xl shadow-primary/20 bg-primary text-white hover:bg-primary/90">
+              <Download className="w-5 h-5" /> Download PDF
+            </Button>
           </header>
 
           <div className="space-y-12">

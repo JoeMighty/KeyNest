@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { calculateTotalCost, calculateStampDuty } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
-import { Download, Wallet, Plus, Info, Trash2, PlusCircle, Leaf } from "lucide-react";
+import { Download, Wallet, Plus, Info, Trash2, PlusCircle } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
@@ -27,7 +27,6 @@ export default function TotalCostPage() {
   const [mortgage, setMortgage] = useState<number>(999);
   const [removals, setRemovals] = useState<number>(800);
   const [buyerType, setBuyerType] = useState<"first-time" | "mover" | "additional">("mover");
-  const [isEco, setIsEco] = useState(false);
   
   const [customCosts, setCustomCosts] = useState<CustomCost[]>([]);
 
@@ -72,39 +71,33 @@ export default function TotalCostPage() {
     return baseResult;
   }, [price, deposit, legal, survey, mortgage, removals, buyerType, customCosts]);
 
-  const downloadPDF = (ecoMode: boolean = false) => {
+  const downloadPDF = () => {
     const doc = new jsPDF();
     
-    // Header Branding
-    if (!ecoMode) {
-      doc.setFillColor(37, 99, 235);
-      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.text("K", 26, 23, { align: "center" });
-    }
-    
-    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
-    doc.setFontSize(22);
+    // Minimal Branded Header
+    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("KeyNest", ecoMode ? 20 : 35, 25);
+    doc.text("KeyNest", 20, 25);
     
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-    doc.text("Total Cost of Buying Breakdown", 20, 38);
+    doc.setTextColor(100);
+    doc.text("- Total Cost of Buying", 48, 25);
+    
+    doc.setDrawColor(230);
+    doc.line(20, 35, 190, 35);
 
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(`Property Price: ${formatCurrency(price)}`, 20, 52);
-    doc.text(`Deposit: ${formatCurrency(deposit)}`, 20, 59);
+    doc.text(`Property Price: ${formatCurrency(price)}`, 20, 50);
+    doc.text(`Deposit: ${formatCurrency(deposit)}`, 20, 57);
     
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text(`Total Cash Needed: ${formatCurrency(result.totalCashNeeded)}`, 20, 75);
+    doc.text(`Total Cash Needed: ${formatCurrency(result.totalCashNeeded)}`, 20, 72);
     
-    let y = 95;
+    let y = 90;
     result.breakdown.forEach(section => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
@@ -121,8 +114,8 @@ export default function TotalCostPage() {
       y += 5;
     });
     
-    doc.save(`KeyNest_Total_Cost_${ecoMode ? 'eco' : 'full'}.pdf`);
-    toast.success(`${ecoMode ? 'Eco' : 'Standard'} Download started!`);
+    doc.save(`KeyNest_Total_Cost.pdf`);
+    toast.success("Download started!");
   };
 
   return (
@@ -238,18 +231,6 @@ export default function TotalCostPage() {
                   )}
                 </CardContent>
               </Card>
-
-              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-xl p-4 flex gap-3">
-                <Info className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-bold text-amber-800 dark:text-amber-200 mb-1">
-                    Don't forget furnishing costs!
-                  </p>
-                  <p className="text-xs text-amber-700/80 dark:text-amber-300/60">
-                    Use the <PlusCircle className="inline w-3 h-3" /> button above to add custom items like flooring, white goods, or a new sofa.
-                  </p>
-                </div>
-              </div>
             </div>
 
             {/* Results Section */}
@@ -296,28 +277,9 @@ export default function TotalCostPage() {
                 </CardContent>
                 
                 <div className="bg-muted/50 p-6 border-t flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                  <div className="flex items-center gap-2 bg-background p-1 rounded-xl border">
-                    <Button 
-                      variant={!isEco ? "secondary" : "ghost"} 
-                      size="sm" 
-                      onClick={() => setIsEco(false)}
-                      className="rounded-lg h-10 px-4"
-                    >
-                      Standard
-                    </Button>
-                    <Button 
-                      variant={isEco ? "secondary" : "ghost"} 
-                      size="sm" 
-                      onClick={() => setIsEco(true)}
-                      className="rounded-lg h-10 px-4 text-green-600 dark:text-green-400 gap-2"
-                    >
-                      <Leaf className="w-3 h-3" /> Eco
-                    </Button>
-                    <div className="w-px h-4 bg-border mx-1" />
-                    <Button onClick={() => downloadPDF(isEco)} className="gap-2 h-10 rounded-lg px-6 shadow-lg shadow-primary/10">
-                      <Download className="w-4 h-4" /> Download
-                    </Button>
-                  </div>
+                  <Button onClick={downloadPDF} className="gap-2 h-12 rounded-xl px-8 shadow-lg shadow-primary/10">
+                    <Download className="w-4 h-4" /> Download PDF Report
+                  </Button>
                   <Button variant="outline" className="gap-2 h-12 rounded-xl">
                     <Plus className="w-4 h-4" /> Save to Browser
                   </Button>

@@ -3,62 +3,55 @@
 import { useState, useMemo } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { calculateStampDuty } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
-import { Download, Share2, Info, Leaf } from "lucide-react";
+import { Download, Share2, Info } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
 export default function StampDutyPage() {
   const [price, setPrice] = useState<number>(350000);
   const [buyerType, setBuyerType] = useState<"first-time" | "mover" | "additional">("mover");
-  const [isEco, setIsEco] = useState(false);
 
   const result = useMemo(() => {
     return calculateStampDuty(price, buyerType);
   }, [price, buyerType]);
 
-  const downloadPDF = (ecoMode: boolean = false) => {
+  const downloadPDF = () => {
     const doc = new jsPDF();
     
-    // Header Branding
-    if (!ecoMode) {
-      doc.setFillColor(37, 99, 235);
-      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.text("K", 26, 23, { align: "center" });
-    }
-    
-    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
-    doc.setFontSize(22);
+    // Minimal Branded Header
+    doc.setTextColor(37, 99, 235);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("KeyNest", ecoMode ? 20 : 35, 25);
+    doc.text("KeyNest", 20, 25);
     
-    doc.setFontSize(10);
+    doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-    doc.text("Stamp Duty Calculation (UK)", 20, 38);
+    doc.setTextColor(100);
+    doc.text("- Stamp Duty Calculation (UK)", 48, 25);
+    
+    doc.setDrawColor(230);
+    doc.line(20, 35, 190, 35);
     
     doc.setFontSize(12);
     doc.setTextColor(0, 0, 0);
-    doc.text(`Property Price: ${formatCurrency(price)}`, 20, 52);
-    doc.text(`Buyer Status: ${buyerType.replace("-", " ")}`, 20, 59);
+    doc.text(`Property Price: ${formatCurrency(price)}`, 20, 50);
+    doc.text(`Buyer Status: ${buyerType.replace("-", " ")}`, 20, 57);
     
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text(`Total Stamp Duty: ${formatCurrency(result.totalTax)}`, 20, 75);
-    doc.text(`Effective Tax Rate: ${result.effectiveRate.toFixed(2)}%`, 20, 85);
+    doc.text(`Total Stamp Duty: ${formatCurrency(result.totalTax)}`, 20, 72);
+    doc.text(`Effective Tax Rate: ${result.effectiveRate.toFixed(2)}%`, 20, 82);
     
     doc.setFontSize(14);
-    doc.text("Tax Breakdown", 20, 100);
+    doc.text("Tax Breakdown", 20, 97);
     
-    let y = 110;
+    let y = 107;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
     result.bands.forEach(band => {
@@ -67,8 +60,8 @@ export default function StampDutyPage() {
       y += 7;
     });
     
-    doc.save(`KeyNest_Stamp_Duty_${ecoMode ? 'eco' : 'full'}.pdf`);
-    toast.success(`${ecoMode ? 'Eco' : 'Standard'} PDF Downloaded!`);
+    doc.save(`KeyNest_Stamp_Duty.pdf`);
+    toast.success("PDF Downloaded!");
   };
 
   return (
@@ -176,28 +169,9 @@ export default function StampDutyPage() {
                 </CardContent>
                 
                 <div className="bg-muted/50 p-6 border-t flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                  <div className="flex items-center gap-2 bg-background p-1 rounded-xl border">
-                    <Button 
-                      variant={!isEco ? "secondary" : "ghost"} 
-                      size="sm" 
-                      onClick={() => setIsEco(false)}
-                      className="rounded-lg h-10 px-4"
-                    >
-                      Standard
-                    </Button>
-                    <Button 
-                      variant={isEco ? "secondary" : "ghost"} 
-                      size="sm" 
-                      onClick={() => setIsEco(true)}
-                      className="rounded-lg h-10 px-4 text-green-600 dark:text-green-400 gap-2"
-                    >
-                      <Leaf className="w-3 h-3" /> Eco
-                    </Button>
-                    <div className="w-px h-4 bg-border mx-1" />
-                    <Button onClick={() => downloadPDF(isEco)} className="gap-2 h-10 rounded-lg px-6 shadow-lg shadow-primary/10">
-                      <Download className="w-4 h-4" /> Download
-                    </Button>
-                  </div>
+                  <Button onClick={downloadPDF} className="gap-2 h-12 rounded-xl px-8 shadow-lg shadow-primary/10">
+                    <Download className="w-4 h-4" /> Download PDF Report
+                  </Button>
                   <Button variant="outline" className="gap-2 h-12 rounded-xl">
                     <Share2 className="w-4 h-4" /> Copy Link
                   </Button>
