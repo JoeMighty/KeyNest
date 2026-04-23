@@ -74,7 +74,7 @@ export default function ToolsPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow pt-24 py-12 md:py-20 bg-muted/30">
+      <main className="flex-grow pt-32 pb-12 md:pt-40 md:pb-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <header className="max-w-2xl mb-12">
             <h1 className="text-4xl font-bold mb-4">All Home Buyer Tools</h1>

@@ -80,20 +80,20 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden border-t bg-background dark:bg-slate-900 px-4 py-4 space-y-2 shadow-xl">
+        <div className="md:hidden fixed inset-0 top-[96px] bg-slate-950/95 backdrop-blur-2xl px-6 py-10 space-y-4 z-50 border-t border-white/10 animate-in fade-in slide-in-from-top-4 duration-300">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setIsOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all",
+                "flex items-center gap-4 px-6 py-5 rounded-[2rem] text-lg font-bold transition-all active:scale-95",
                 pathname === item.href 
-                  ? "bg-primary text-white shadow-lg shadow-primary/20" 
-                  : "hover:bg-muted text-slate-600 dark:text-slate-400"
+                  ? "bg-primary text-white shadow-2xl shadow-primary/40" 
+                  : "bg-white/5 text-slate-300 hover:bg-white/10"
               )}
             >
-              <item.icon className="w-5 h-5" />
+              <item.icon className="w-6 h-6" />
               {item.name}
             </Link>
           ))}

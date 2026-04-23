@@ -45,7 +45,7 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/40 to-slate-950" />
           </div>
 
-          <div className="container mx-auto px-4 relative z-10 text-center">
+          <div className="container mx-auto px-4 relative z-10 text-center pt-32 md:pt-0">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
