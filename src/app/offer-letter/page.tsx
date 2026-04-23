@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,9 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Copy, Download, Mail, Send } from "lucide-react";
+import { Copy, Download, Mail } from "lucide-react";
+import jsPDF from "jspdf";
 
 export default function OfferLetterPage() {
+  const previewRef = useRef<HTMLDivElement>(null);
   const [details, setDetails] = useState({
     agentName: "Estate Agent Name",
     propertyAddress: "123 Example Street, City",
@@ -55,11 +57,25 @@ ${details.buyerName}
     toast.success("Copied to clipboard!");
   };
 
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    
+    // Add content to PDF
+    const lines = doc.splitTextToSize(letterText, 170);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text(lines, 20, 30);
+    
+    // Save the PDF
+    doc.save(`Offer_Letter_${details.propertyAddress.replace(/[^a-z0-9]/gi, '_')}.pdf`);
+    toast.success("PDF Downloaded Successfully!");
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
+      <main className="flex-grow pt-24 container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-5xl mx-auto">
           <header className="mb-8 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Offer Letter Generator</h1>
@@ -128,16 +144,16 @@ ${details.buyerName}
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-grow p-8 sm:p-12 bg-card font-serif whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-card-foreground">
-                  <div className="bg-muted p-6 rounded-lg border border-border shadow-inner">
+                <CardContent className="flex-grow p-8 sm:p-12 bg-card font-sans whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-card-foreground">
+                  <div ref={previewRef} className="bg-muted p-6 rounded-lg border border-border shadow-inner">
                     {letterText}
                   </div>
                 </CardContent>
-                <div className="p-6 border-t bg-muted/50 flex flex-col sm:row gap-4">
+                <div className="p-6 border-t bg-muted/50 flex flex-col sm:flex-row gap-4">
                   <Button className="w-full gap-2 h-12 rounded-xl text-base shadow-lg shadow-primary/20">
                     <Mail className="w-4 h-4" /> Email Agent
                   </Button>
-                  <Button variant="outline" className="w-full gap-2 h-12 rounded-xl text-base">
+                  <Button variant="outline" className="w-full gap-2 h-12 rounded-xl text-base" onClick={downloadPDF}>
                     <Download className="w-4 h-4" /> Download PDF
                   </Button>
                 </div>
