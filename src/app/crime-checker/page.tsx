@@ -90,47 +90,63 @@ export default function CrimeChecker() {
             </div>
           </header>
 
-          {/* Search Box */}
-          <Card className="mb-12 border-2 border-primary/10 shadow-2xl rounded-[2.5rem] overflow-hidden">
-            <CardContent className="p-2">
-              <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              <div className="md:col-span-4 relative">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <Search className="w-5 h-5" />
-                </div>
-                <Input 
-                  placeholder="Enter UK Postcode (e.g., SW1A 1AA)" 
-                  value={postcode}
-                  onChange={(e) => setPostcode(e.target.value.toUpperCase())}
-                  className="pl-12 h-14 rounded-2xl bg-muted/50 border-none text-lg shadow-inner"
-                />
-              </div>
+          {/* Professional Search Bar */}
+          <div className="mb-12">
+            <div className="relative group">
+              {/* Glow Effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+              
+              <Card className="relative border-2 border-primary/10 shadow-2xl rounded-[2.5rem] overflow-hidden bg-background/80 backdrop-blur-xl">
+                <CardContent className="p-2">
+                  <form onSubmit={handleSearch} className="flex flex-col lg:flex-row items-center gap-2">
+                    {/* Postcode Input */}
+                    <div className="flex-grow flex items-center px-6 gap-4 min-w-0 w-full lg:w-auto">
+                      <MapPin className="w-6 h-6 text-primary shrink-0" />
+                      <div className="flex-grow">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 block mb-0.5 ml-0.5">Postcode</Label>
+                        <Input 
+                          placeholder="SW1A 1AA" 
+                          value={postcode}
+                          onChange={(e) => setPostcode(e.target.value.toUpperCase())}
+                          className="h-10 p-0 border-none bg-transparent text-xl font-bold focus-visible:ring-0 placeholder:text-muted-foreground/30 shadow-none"
+                        />
+                      </div>
+                    </div>
 
-              <div className="md:col-span-5 bg-muted/50 rounded-2xl px-6 py-2 flex flex-col justify-center">
-                <div className="flex justify-between items-center mb-1">
-                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Search Radius</Label>
-                  <span className="text-sm font-bold font-mono text-primary">{radius}m</span>
-                </div>
-                <Slider 
-                  value={[radius]} 
-                  onValueChange={([v]) => setRadius(v)}
-                  min={250}
-                  max={2000}
-                  step={250}
-                  className="py-2"
-                />
-              </div>
+                    {/* Vertical Divider (Desktop) */}
+                    <div className="hidden lg:block w-px h-12 bg-muted/50" />
 
-              <Button 
-                type="submit"
-                disabled={loading}
-                className="md:col-span-3 h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
-              >
-                {loading ? "Searching..." : "Check Safety"}
-              </Button>
-            </form>
-            </CardContent>
-          </Card>
+                    {/* Radius Control */}
+                    <div className="w-full lg:w-64 px-6 py-2">
+                      <div className="flex justify-between items-center mb-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Search Area</Label>
+                        <span className="text-xs font-black font-mono text-primary bg-primary/10 px-2 py-0.5 rounded-full">{radius}m</span>
+                      </div>
+                      <Slider 
+                        value={[radius]} 
+                        onValueChange={([v]) => setRadius(v)}
+                        min={250}
+                        max={2000}
+                        step={250}
+                        className="py-1 cursor-pointer"
+                      />
+                    </div>
+
+                    {/* Search Button */}
+                    <Button 
+                      type="submit"
+                      disabled={loading || !postcode}
+                      className="w-full lg:w-auto h-16 lg:h-16 px-10 rounded-[1.8rem] text-lg font-black gap-3 shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] bg-primary text-white"
+                    >
+                      {loading ? "Searching..." : "Check Safety"}
+                      <Search className="w-5 h-5" />
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
 
           {results ? (
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">

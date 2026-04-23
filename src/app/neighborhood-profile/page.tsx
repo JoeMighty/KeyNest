@@ -137,29 +137,44 @@ export default function NeighborhoodProfilePage() {
             </div>
           </header>
 
-          {/* Search Box */}
-          <Card className="mb-12 border-2 border-primary/10 shadow-2xl rounded-[2.5rem] overflow-hidden">
-            <CardContent className="p-2">
-              <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center gap-2">
-                <div className="relative flex-grow w-full">
-                  <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
-                  <Input 
-                    placeholder="Enter UK Postcode (e.g. SW1A 1AA)" 
-                    className="h-16 pl-14 pr-6 text-lg border-none bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/60"
-                    value={postcode}
-                    onChange={(e) => setPostcode(e.target.value.toUpperCase())}
-                  />
-                </div>
-                <Button 
-                  disabled={loading || !postcode}
-                  className="h-14 px-8 md:mr-1 rounded-[1.8rem] gap-2 text-lg font-bold w-full md:w-auto transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  {loading ? "Analyzing area..." : "Get Area Insights"}
-                  <Search className="w-5 h-5" />
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+          {/* Professional Unified Search Bar */}
+          <div className="mb-12 max-w-4xl mx-auto">
+            <div className="relative group">
+              {/* Premium Glow */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-indigo-600/30 rounded-[2.5rem] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+              
+              <Card className="relative border-2 border-primary/10 shadow-2xl rounded-[2.5rem] overflow-hidden bg-background/90 backdrop-blur-2xl">
+                <CardContent className="p-2">
+                  <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center">
+                    <div className="flex-grow flex items-center px-6 gap-4 w-full md:w-auto">
+                      <div className="p-3 bg-primary/10 rounded-2xl text-primary">
+                        <MapPin className="w-6 h-6" />
+                      </div>
+                      <div className="flex-grow">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 block mb-0.5 ml-0.5">UK Postcode</Label>
+                        <Input 
+                          placeholder="SW1A 1AA" 
+                          value={postcode}
+                          onChange={(e) => setPostcode(e.target.value.toUpperCase())}
+                          className="h-10 p-0 border-none bg-transparent text-xl font-bold focus-visible:ring-0 placeholder:text-muted-foreground/30 shadow-none"
+                        />
+                      </div>
+                    </div>
+
+                    <Button 
+                      type="submit"
+                      disabled={loading || !postcode}
+                      className="w-full md:w-auto h-16 px-10 rounded-[1.8rem] text-lg font-black gap-3 shadow-xl shadow-primary/20 transition-all hover:scale-[1.05] active:scale-[0.95] bg-primary text-white"
+                    >
+                      {loading ? "Analyzing Area..." : "Get Area Insights"}
+                      <Search className="w-5 h-5" />
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
 
           {data ? (
             <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">

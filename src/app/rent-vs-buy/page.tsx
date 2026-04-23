@@ -102,8 +102,9 @@ export default function RentVsBuyPage() {
                     {result?.betterOption === "buy" ? "Buying is Better" : "Renting is Better"}
                   </h2>
                   <p className="text-lg opacity-90">
-                    Over {years} years, buying could save you <span className="font-bold">{result ? formatCurrency(result.difference) : "£0"}</span>.
+                    Over {years} years, buying could save you <span className="font-bold">{result ? formatCurrency(result.difference) : "£0"}</span> (Long-term Estimate).
                   </p>
+
                 </div>
                 
                 <CardContent className="p-8">

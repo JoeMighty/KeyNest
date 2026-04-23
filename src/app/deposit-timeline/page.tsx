@@ -121,7 +121,7 @@ export default function SavingsTimelinePage() {
                       <h2 className="text-3xl font-bold">
                         {Math.floor(result.monthsToTarget / 12)}y {result.monthsToTarget % 12}m
                       </h2>
-                      <p className="text-slate-400 text-sm font-medium uppercase tracking-widest">Until Goal Reached</p>
+                      <p className="text-slate-400 text-sm font-medium uppercase tracking-widest font-bold opacity-80">Projected Goal Date</p>
                     </div>
                   </div>
 
