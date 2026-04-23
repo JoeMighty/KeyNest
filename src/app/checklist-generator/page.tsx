@@ -32,9 +32,11 @@ export default function ChecklistPage() {
     
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
+    
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
     
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
     pdf.save("KeyNest-Checklist.pdf");
