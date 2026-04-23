@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Trash2, Star, MapPin, PoundSterling, Bed, Bath, Zap } from "lucide-react";
+import { Trash2, Star, MapPin, PoundSterling, Bed, Bath, Zap, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export interface Property {
   id: string;
@@ -28,6 +30,28 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ property, onUpdate, onRemove }: PropertyCardProps) {
+  const [isFetchingImage, setIsFetchingImage] = useState(false);
+
+  const fetchImageFromListing = async () => {
+    if (!property.listingUrl || property.imageUrl) return;
+    
+    setIsFetchingImage(true);
+    try {
+      const res = await fetch(`/api/og-image?url=${encodeURIComponent(property.listingUrl)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.imageUrl) {
+          onUpdate(property.id, { imageUrl: data.imageUrl });
+          toast.success("Image pulled automatically!");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsFetchingImage(false);
+    }
+  };
+
   return (
     <Card className="relative overflow-hidden border-2 border-primary/5 hover:border-primary/20 transition-all shadow-lg group flex flex-col h-full">
       {property.imageUrl ? (
@@ -159,13 +183,19 @@ export function PropertyCard({ property, onUpdate, onRemove }: PropertyCardProps
             </div>
           </div>
           
-          <div className="space-y-2 pt-2 border-t border-dashed">
-            <Input 
-              placeholder="Listing URL (Rightmove/Zoopla)" 
-              value={property.listingUrl || ""} 
-              onChange={(e) => onUpdate(property.id, { listingUrl: e.target.value })}
-              className="h-8 text-xs bg-muted/50"
-            />
+          <div className="space-y-2 pt-2 border-t border-dashed relative">
+            <div className="relative">
+              <Input 
+                placeholder="Listing URL (Rightmove/Zoopla)" 
+                value={property.listingUrl || ""} 
+                onChange={(e) => onUpdate(property.id, { listingUrl: e.target.value })}
+                onBlur={fetchImageFromListing}
+                className="h-8 text-xs bg-muted/50 pr-8"
+              />
+              {isFetchingImage && (
+                <Loader2 className="w-3 h-3 absolute right-2 top-1/2 -translate-y-1/2 animate-spin text-muted-foreground" />
+              )}
+            </div>
             <Input 
               placeholder="Image URL" 
               value={property.imageUrl || ""} 
