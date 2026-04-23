@@ -70,7 +70,7 @@ export default function StampDutyPage() {
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-5xl mx-auto">
-          <header className="mb-8 text-center md:text-left">
+          <header className="mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Stamp Duty Calculator (UK)</h1>
             <p className="text-muted-foreground">Calculate how much Stamp Duty Land Tax (SDLT) you'll pay on your property purchase.</p>
           </header>

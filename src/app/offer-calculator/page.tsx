@@ -28,7 +28,7 @@ export default function OfferCalculatorPage() {
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-5xl mx-auto">
-          <header className="mb-8 text-center md:text-left">
+          <header className="mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Offer Calculator</h1>
             <p className="text-muted-foreground">Strategic advice on how much to offer based on the property and market conditions.</p>
           </header>

@@ -89,7 +89,7 @@ ${details.buyerName}
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-5xl mx-auto">
-          <header className="mb-8 text-center md:text-left">
+          <header className="mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Offer Letter Generator</h1>
             <p className="text-muted-foreground">Professional templates to help you secure your dream home.</p>
           </header>

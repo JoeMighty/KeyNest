@@ -89,8 +89,8 @@ export default function MovingCostsPage() {
       
       <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-4xl mx-auto">
-          <header className="mb-12 flex flex-col md:row items-center justify-between gap-6">
-            <div className="text-center md:text-left">
+          <header className="mb-12 flex flex-col items-center justify-center gap-6 text-center">
+            <div>
               <h1 className="text-3xl md:text-5xl font-bold mb-3">Moving Cost Estimator</h1>
               <p className="text-muted-foreground text-lg">Budget for the final push. Don't let hidden moving costs catch you by surprise.</p>
             </div>
