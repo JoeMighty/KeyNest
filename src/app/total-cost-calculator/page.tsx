@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { calculateTotalCost, calculateStampDuty } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
-import { Download, Wallet, Plus, Info, Trash2, PlusCircle } from "lucide-react";
+import { Download, Wallet, Plus, Info, Trash2, PlusCircle, Leaf } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
@@ -27,6 +27,7 @@ export default function TotalCostPage() {
   const [mortgage, setMortgage] = useState<number>(999);
   const [removals, setRemovals] = useState<number>(800);
   const [buyerType, setBuyerType] = useState<"first-time" | "mover" | "additional">("mover");
+  const [isEco, setIsEco] = useState(false);
   
   const [customCosts, setCustomCosts] = useState<CustomCost[]>([]);
 
@@ -55,15 +56,11 @@ export default function TotalCostPage() {
   const result = useMemo(() => {
     const stampDuty = calculateStampDuty(price, buyerType).totalTax;
     const otherCostsTotal = customCosts.reduce((acc, curr) => acc + curr.amount, 0);
-    
-    // We'll pass the base fees and manually add the custom ones to the result
     const baseResult = calculateTotalCost(price, deposit, stampDuty, { legal, survey, mortgage, removals, other: otherCostsTotal });
     
-    // Enrich breakdown with custom costs
     if (customCosts.length > 0) {
       const movingSection = baseResult.breakdown.find(b => b.category === "Moving & Setup");
       if (movingSection) {
-        // Remove the default 'Other Costs' if it exists or just append ours
         customCosts.forEach(cc => {
           if (cc.amount > 0) {
             movingSection.items.push({ name: cc.name, amount: cc.amount });
@@ -75,22 +72,39 @@ export default function TotalCostPage() {
     return baseResult;
   }, [price, deposit, legal, survey, mortgage, removals, buyerType, customCosts]);
 
-  const downloadPDF = () => {
+  const downloadPDF = (ecoMode: boolean = false) => {
     const doc = new jsPDF();
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text("Total Cost of Buying Breakdown", 20, 30);
     
-    doc.setFontSize(12);
+    // Header Branding
+    if (!ecoMode) {
+      doc.setFillColor(37, 99, 235);
+      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text("K", 26, 23, { align: "center" });
+    }
+    
+    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("KeyNest", ecoMode ? 20 : 35, 25);
+    
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.text(`Property Price: ${formatCurrency(price)}`, 20, 45);
-    doc.text(`Deposit: ${formatCurrency(deposit)}`, 20, 52);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Total Cost of Buying Breakdown", 20, 38);
+
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Property Price: ${formatCurrency(price)}`, 20, 52);
+    doc.text(`Deposit: ${formatCurrency(deposit)}`, 20, 59);
     
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
-    doc.text(`Total Cash Needed: ${formatCurrency(result.totalCashNeeded)}`, 20, 65);
+    doc.text(`Total Cash Needed: ${formatCurrency(result.totalCashNeeded)}`, 20, 75);
     
-    let y = 80;
+    let y = 95;
     result.breakdown.forEach(section => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
@@ -107,8 +121,8 @@ export default function TotalCostPage() {
       y += 5;
     });
     
-    doc.save("KeyNest_Cost_Breakdown.pdf");
-    toast.success("Download started!");
+    doc.save(`KeyNest_Total_Cost_${ecoMode ? 'eco' : 'full'}.pdf`);
+    toast.success(`${ecoMode ? 'Eco' : 'Standard'} Download started!`);
   };
 
   return (
@@ -282,9 +296,28 @@ export default function TotalCostPage() {
                 </CardContent>
                 
                 <div className="bg-muted/50 p-6 border-t flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                  <Button className="gap-2 px-8 rounded-xl h-12 shadow-lg shadow-primary/10" onClick={downloadPDF}>
-                    <Download className="w-4 h-4" /> Download Full Breakdown
-                  </Button>
+                  <div className="flex items-center gap-2 bg-background p-1 rounded-xl border">
+                    <Button 
+                      variant={!isEco ? "secondary" : "ghost"} 
+                      size="sm" 
+                      onClick={() => setIsEco(false)}
+                      className="rounded-lg h-10 px-4"
+                    >
+                      Standard
+                    </Button>
+                    <Button 
+                      variant={isEco ? "secondary" : "ghost"} 
+                      size="sm" 
+                      onClick={() => setIsEco(true)}
+                      className="rounded-lg h-10 px-4 text-green-600 dark:text-green-400 gap-2"
+                    >
+                      <Leaf className="w-3 h-3" /> Eco
+                    </Button>
+                    <div className="w-px h-4 bg-border mx-1" />
+                    <Button onClick={() => downloadPDF(isEco)} className="gap-2 h-10 rounded-lg px-6 shadow-lg shadow-primary/10">
+                      <Download className="w-4 h-4" /> Download
+                    </Button>
+                  </div>
                   <Button variant="outline" className="gap-2 h-12 rounded-xl">
                     <Plus className="w-4 h-4" /> Save to Browser
                   </Button>

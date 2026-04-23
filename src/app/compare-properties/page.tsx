@@ -5,7 +5,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Property, PropertyCard } from "@/components/tools/property-card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, ArrowRightLeft, LayoutGrid, List, Trash2, Download } from "lucide-react";
+import { PlusCircle, ArrowRightLeft, LayoutGrid, Download, Trash2, Leaf } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 import jsPDF from "jspdf";
@@ -15,6 +15,7 @@ const STORAGE_KEY = "keynest_property_comparison";
 export default function ComparePropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [mounted, setMounted] = useState(false);
+  const [isEco, setIsEco] = useState(false);
 
   // Load from localStorage
   useEffect(() => {
@@ -70,42 +71,86 @@ export default function ComparePropertiesPage() {
     }
   };
 
-  const downloadComparison = () => {
+  const downloadComparison = (ecoMode: boolean = false) => {
     const doc = new jsPDF("l", "mm", "a4");
+    const primaryColor = ecoMode ? [50, 50, 50] : [37, 99, 235]; // Slate vs Blue
+    
+    // Header Branding
+    if (!ecoMode) {
+      // Draw Logo
+      doc.setFillColor(37, 99, 235);
+      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.text("K", 26, 23, { align: "center" });
+    }
+    
+    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(22);
-    doc.text("Property Comparison Report", 20, 30);
+    doc.text("KeyNest", ecoMode ? 20 : 35, 24);
     
-    let x = 20;
-    let y = 50;
-    
-    // Headers
+    doc.setTextColor(100, 100, 100);
     doc.setFontSize(10);
-    doc.text("Feature", x, y);
+    doc.setFont("helvetica", "normal");
+    doc.text("Property Comparison Report", 20, 38);
+    
+    if (ecoMode) {
+      doc.setTextColor(34, 197, 94);
+      doc.setFontSize(8);
+      doc.text("Eco-friendly Edition", 20, 42);
+    }
+
+    let x = 20;
+    let y = 60;
+    
+    // Table Headers
+    doc.setFillColor(ecoMode ? 240 : 248, ecoMode ? 240 : 250, ecoMode ? 240 : 255);
+    doc.rect(20, y - 7, 257, 10, "F");
+    
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.text("FEATURE", x + 5, y);
+    
     properties.forEach((p, i) => {
-      doc.text(p.name, x + 60 + (i * 50), y);
+      doc.text(p.name.toUpperCase(), x + 70 + (i * 45), y);
     });
     
     const rows = [
-      { label: "Price", key: "price", format: (v: any) => formatCurrency(v) },
-      { label: "Beds", key: "beds", format: (v: any) => v },
-      { label: "Baths", key: "baths", format: (v: any) => v },
-      { label: "Commute", key: "commuteTime", format: (v: any) => `${v} min` },
-      { label: "EPC", key: "epc", format: (v: any) => v },
-      { label: "Rating", key: "rating", format: (v: any) => `${v}/5` },
+      { label: "Asking Price", key: "price", format: (v: any) => formatCurrency(v) },
+      { label: "Bedrooms", key: "beds", format: (v: any) => `${v} Beds` },
+      { label: "Bathrooms", key: "baths", format: (v: any) => `${v} Baths` },
+      { label: "Commute Time", key: "commuteTime", format: (v: any) => `${v} min` },
+      { label: "EPC Rating", key: "epc", format: (v: any) => v },
+      { label: "Gut Feel Rating", key: "rating", format: (v: any) => `${v}/5 Stars` },
     ];
     
-    rows.forEach(row => {
-      y += 10;
+    rows.forEach((row, idx) => {
+      y += 12;
+      if (idx % 2 === 0) {
+        doc.setFillColor(252, 252, 252);
+        doc.rect(20, y - 7, 257, 12, "F");
+      }
       doc.setFont("helvetica", "normal");
-      doc.text(row.label, x, y);
+      doc.setTextColor(80, 80, 80);
+      doc.text(row.label, x + 5, y);
+      
+      doc.setTextColor(0, 0, 0);
+      doc.setFont("helvetica", "bold");
       properties.forEach((p, i) => {
-        doc.text(row.format((p as any)[row.key]), x + 60 + (i * 50), y);
+        doc.text(row.format((p as any)[row.key]), x + 70 + (i * 45), y);
       });
     });
     
-    doc.save("Property_Comparison.pdf");
-    toast.success("Comparison downloaded!");
+    // Footer
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.text(`Generated on ${new Date().toLocaleDateString()} via KeyNest. No login required.`, 20, 200);
+    
+    doc.save(`KeyNest_Comparison_${ecoMode ? 'eco' : 'full'}.pdf`);
+    toast.success(`${ecoMode ? 'Eco' : 'Standard'} PDF Downloaded!`);
   };
 
   if (!mounted) return null;
@@ -126,14 +171,33 @@ export default function ComparePropertiesPage() {
                 <PlusCircle className="w-5 h-5" /> Add Property
               </Button>
               {properties.length > 0 && (
-                <>
-                  <Button variant="outline" onClick={downloadComparison} className="gap-2 h-12 rounded-xl">
-                    <Download className="w-4 h-4" /> Export PDF
-                  </Button>
-                  <Button variant="ghost" onClick={clearAll} className="text-destructive gap-2 h-12 rounded-xl">
-                    <Trash2 className="w-4 h-4" /> Clear All
-                  </Button>
-                </>
+                <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-xl border">
+                   <Button 
+                    variant={!isEco ? "secondary" : "ghost"} 
+                    size="sm" 
+                    onClick={() => setIsEco(false)}
+                    className="rounded-lg gap-2"
+                   >
+                    Standard
+                   </Button>
+                   <Button 
+                    variant={isEco ? "secondary" : "ghost"} 
+                    size="sm" 
+                    onClick={() => setIsEco(true)}
+                    className="rounded-lg gap-2 text-green-600 dark:text-green-400"
+                   >
+                    <Leaf className="w-3 h-3" /> Eco-Friendly
+                   </Button>
+                   <div className="w-px h-4 bg-border mx-1" />
+                   <Button variant="ghost" size="sm" onClick={() => downloadComparison(isEco)} className="gap-2 rounded-lg">
+                    <Download className="w-4 h-4" /> Download
+                   </Button>
+                </div>
+              )}
+              {properties.length > 0 && (
+                <Button variant="ghost" onClick={clearAll} className="text-destructive gap-2 h-12 rounded-xl">
+                  <Trash2 className="w-4 h-4" /> Clear All
+                </Button>
               )}
             </div>
           </header>
