@@ -231,7 +231,7 @@ export default function AffordabilityStressTest() {
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">Extra Cost</p>
-                            <p className="text-xl font-bold font-mono text-destructive">+£{scenario.extraCost.toFixed(2)}</p>
+                            <p className="text-xl font-bold font-mono text-destructive whitespace-nowrap">+£{scenario.extraCost.toFixed(2)}</p>
                           </div>
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">Affordability</p>
