@@ -95,25 +95,30 @@ export default function ToolsPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {category.tools.map((tool) => (
-                    <Card key={tool.name} className={`group relative transition-all ${tool.status === 'live' ? 'hover:shadow-lg hover:border-primary/30' : 'opacity-70'}`}>
+                    <Card key={tool.name} className={`group relative transition-all duration-300 ${tool.status === 'live' ? 'hover:shadow-xl hover:border-primary/40' : 'opacity-70'}`}>
                       <CardHeader>
                         <div className="flex justify-between items-start">
-                          <CardTitle className="text-lg">{tool.name}</CardTitle>
+                          <CardTitle className="text-xl font-bold">{tool.name}</CardTitle>
                           {tool.status === 'live' ? (
-                            <div className="px-2 py-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded text-[10px] font-bold uppercase tracking-wider">Live</div>
+                            <div className="px-3 py-1 bg-accent/10 text-accent dark:bg-accent/20 rounded-full text-[10px] font-bold uppercase tracking-wider border border-accent/20">Live</div>
                           ) : (
-                            <div className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-[10px] font-bold uppercase tracking-wider">Phase 2</div>
+                            <div className="px-3 py-1 bg-slate-100 text-slate-500 dark:bg-slate-800 rounded-full text-[10px] font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-700">Phase 2</div>
                           )}
                         </div>
-                        <CardDescription className="pt-2">{tool.desc}</CardDescription>
+                        <CardDescription className="pt-3 text-sm leading-relaxed">{tool.desc}</CardDescription>
                       </CardHeader>
                       <CardContent>
                         {tool.status === 'live' ? (
-                          <Button variant="ghost" size="sm" className="w-full justify-between group-hover:bg-primary group-hover:text-white transition-all" asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full justify-between rounded-xl group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all duration-300" 
+                            asChild
+                          >
                             <Link href={tool.href}>Use Tool <ArrowRight className="w-4 h-4" /></Link>
                           </Button>
                         ) : (
-                          <Button variant="ghost" size="sm" className="w-full justify-between cursor-not-allowed" disabled>
+                          <Button variant="ghost" size="sm" className="w-full justify-between cursor-not-allowed opacity-50" disabled>
                             Coming Soon
                           </Button>
                         )}

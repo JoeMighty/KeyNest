@@ -103,29 +103,29 @@ ${details.buyerName}
             </div>
 
             {/* Preview */}
-            <div className="lg:col-span-7 space-y-6">
-              <Card className="h-full flex flex-col">
-                <CardHeader className="border-b bg-muted/30">
+            <div className="lg:col-span-7">
+              <Card className="h-full flex flex-col shadow-xl border-primary/10">
+                <CardHeader className="border-b bg-primary/5 dark:bg-primary/10">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-lg">Letter Preview</CardTitle>
-                      <CardDescription>This is how your offer will appear.</CardDescription>
+                      <CardTitle className="text-xl font-bold">Letter Preview</CardTitle>
+                      <CardDescription>Professional and ready to send.</CardDescription>
                     </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={copyToClipboard} className="gap-2">
-                        <Copy className="w-4 h-4" /> Copy
-                      </Button>
-                    </div>
+                    <Button variant="secondary" size="sm" onClick={copyToClipboard} className="gap-2 rounded-full">
+                      <Copy className="w-4 h-4" /> Copy Text
+                    </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-grow p-8 bg-slate-50 dark:bg-slate-900/50 font-serif whitespace-pre-wrap text-sm leading-relaxed">
-                  {letterText}
+                <CardContent className="flex-grow p-8 sm:p-12 bg-white dark:bg-slate-950 font-serif whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200">
+                  <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-lg border border-slate-100 dark:border-slate-800 shadow-inner">
+                    {letterText}
+                  </div>
                 </CardContent>
-                <div className="p-6 border-t bg-muted/30 flex gap-4">
-                  <Button className="w-full gap-2">
+                <div className="p-6 border-t bg-slate-50 dark:bg-slate-900/50 flex flex-col sm:row gap-4">
+                  <Button className="w-full gap-2 h-12 rounded-xl text-base shadow-lg shadow-primary/20">
                     <Mail className="w-4 h-4" /> Email Agent
                   </Button>
-                  <Button variant="outline" className="w-full gap-2">
+                  <Button variant="outline" className="w-full gap-2 h-12 rounded-xl text-base">
                     <Download className="w-4 h-4" /> Download PDF
                   </Button>
                 </div>
