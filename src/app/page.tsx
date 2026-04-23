@@ -59,7 +59,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-primary selection:text-white">
-      <Navbar isHome />
+      <Navbar />
       
       <main className="flex-grow">
         {/* Hero Section - High Polish */}
