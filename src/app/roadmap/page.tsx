@@ -6,7 +6,7 @@ import { CheckCircle2, Circle, Clock, Rocket } from "lucide-react";
 
 const roadmapData = [
   {
-    phase: "Phase 1: Foundation (Current)",
+    phase: "Phase 1: Foundation",
     status: "completed",
     items: [
       "Stamp Duty Calculator (UK)",
@@ -16,13 +16,13 @@ const roadmapData = [
       "Offer Strategy Calculator",
       "FTB Checklist Generator (PDF)",
       "Offer Letter Generator",
-      "Property Comparison Tool",
     ]
   },
   {
     phase: "Phase 2: Decision Support",
-    status: "in-progress",
+    status: "completed",
     items: [
+      "Property Comparison Tool",
       "Mortgage Overpayment Calculator",
       "Deposit Savings Timeline",
       "House Viewing Checklist (PDF)",
@@ -31,7 +31,7 @@ const roadmapData = [
   },
   {
     phase: "Phase 3: Deep Research",
-    status: "planned",
+    status: "in-progress",
     items: [
       "Council Tax Estimator (Data-assisted)",
       "Postcode Comparison Tool",

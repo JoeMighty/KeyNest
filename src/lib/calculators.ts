@@ -318,3 +318,126 @@ export function calculateRentVsBuy(
     yearlyBreakdown,
   };
 }
+
+export interface OverpaymentResult {
+  monthlyPayment: number;
+  totalInterestStandard: number;
+  totalInterestWithOverpayment: number;
+  savings: number;
+  yearsSaved: number;
+  monthsSaved: number;
+  newTermMonths: number;
+  amortization: {
+    month: number;
+    balance: number;
+    interest: number;
+    principal: number;
+    overpayment: number;
+  }[];
+}
+
+export function calculateOverpayment(
+  balance: number,
+  annualRate: number,
+  remainingTermYears: number,
+  monthlyOverpayment: number,
+  oneOffLumpSum: number = 0
+): OverpaymentResult {
+  const monthlyRate = annualRate / 100 / 12;
+  const standardMonths = remainingTermYears * 12;
+  
+  // Standard Mortgage (No Overpayments)
+  const standardPayment = 
+    (balance * monthlyRate * Math.pow(1 + monthlyRate, standardMonths)) /
+    (Math.pow(1 + monthlyRate, standardMonths) - 1);
+  
+  const totalInterestStandard = (standardPayment * standardMonths) - balance;
+
+  // Overpayment Calculation
+  let currentBalance = balance - oneOffLumpSum;
+  let totalInterestWithOverpayment = 0;
+  let month = 0;
+  const amortization = [];
+
+  while (currentBalance > 0 && month < standardMonths) {
+    month++;
+    const interest = currentBalance * monthlyRate;
+    const principal = Math.min(currentBalance, (standardPayment - interest) + monthlyOverpayment);
+    
+    totalInterestWithOverpayment += interest;
+    currentBalance -= principal;
+
+    if (month % 12 === 0 || month === 1) {
+      amortization.push({
+        month,
+        balance: Math.max(0, currentBalance),
+        interest,
+        principal,
+        overpayment: monthlyOverpayment
+      });
+    }
+
+    if (currentBalance <= 0) break;
+  }
+
+  const monthsSaved = standardMonths - month;
+  
+  return {
+    monthlyPayment: standardPayment,
+    totalInterestStandard,
+    totalInterestWithOverpayment,
+    savings: totalInterestStandard - totalInterestWithOverpayment,
+    yearsSaved: Math.floor(monthsSaved / 12),
+    monthsSaved: monthsSaved % 12,
+    newTermMonths: month,
+    amortization
+  };
+}
+
+export interface SavingsTimelineResult {
+  monthsToTarget: number;
+  totalSaved: number;
+  totalInterest: number;
+  timeline: {
+    month: number;
+    balance: number;
+    contribution: number;
+    interest: number;
+  }[];
+}
+
+export function calculateSavingsTimeline(
+  target: number,
+  current: number,
+  monthlyContribution: number,
+  annualRate: number
+): SavingsTimelineResult {
+  const monthlyRate = annualRate / 100 / 12;
+  let balance = current;
+  let totalInterest = 0;
+  let month = 0;
+  const timeline = [];
+
+  while (balance < target && month < 600) { // Cap at 50 years
+    month++;
+    const interest = balance * monthlyRate;
+    totalInterest += interest;
+    balance += monthlyContribution + interest;
+
+    if (month % 6 === 0 || month === 1) {
+      timeline.push({
+        month,
+        balance,
+        contribution: monthlyContribution,
+        interest
+      });
+    }
+  }
+
+  return {
+    monthsToTarget: month,
+    totalSaved: balance,
+    totalInterest,
+    timeline
+  };
+}
