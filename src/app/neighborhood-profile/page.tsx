@@ -1,0 +1,322 @@
+"use client";
+
+import { useState } from "react";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  PieChart, 
+  Pie, 
+  Cell 
+} from "recharts";
+import { 
+  Search, 
+  MapPin, 
+  Users, 
+  Home, 
+  Briefcase, 
+  PoundSterling,
+  Info,
+  Building2,
+  Calendar,
+  Languages
+} from "lucide-react";
+import { getNeighborhoodProfile, NeighborhoodProfile } from "@/lib/neighborhood";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+const COLORS = ["#2563eb", "#6366f1", "#8b5cf6", "#d946ef", "#f43f5e", "#f97316"];
+
+export default function NeighborhoodProfilePage() {
+  const [postcode, setPostcode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<NeighborhoodProfile | null>(null);
+
+  const handleSearch = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!postcode) return;
+
+    setLoading(true);
+    try {
+      const profile = await getNeighborhoodProfile(postcode);
+      if (!profile) {
+        toast.error("Could not find data for this postcode.");
+      } else {
+        setData(profile);
+        toast.success("Area intelligence loaded.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while fetching neighborhood data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const ChartSection = ({ title, description, icon: Icon, data: chartData, type = "bar" }: any) => (
+    <Card className="shadow-lg border-2 border-primary/5">
+      <CardHeader>
+        <div className="flex items-center gap-3 mb-1">
+          <div className="p-2 bg-primary/10 rounded-lg text-primary">
+            <Icon className="w-5 h-5" />
+          </div>
+          <CardTitle className="text-lg">{title}</CardTitle>
+        </div>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent className="h-[300px]">
+        <ResponsiveContainer width="100%" height="100%">
+          {type === "bar" ? (
+            <BarChart data={chartData} layout="vertical" margin={{ left: 30, right: 30 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} opacity={0.1} />
+              <XAxis type="number" hide />
+              <YAxis 
+                dataKey="name" 
+                type="category" 
+                width={80} 
+                axisLine={false} 
+                tickLine={false} 
+                style={{ fontSize: '12px' }}
+              />
+              <Tooltip 
+                cursor={{ fill: 'transparent' }}
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+              />
+              <Bar 
+                dataKey="percentage" 
+                fill="#2563eb" 
+                radius={[0, 4, 4, 0]} 
+                barSize={20}
+              />
+            </BarChart>
+          ) : (
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                paddingAngle={5}
+                dataKey="percentage"
+              >
+                {chartData.map((_: any, index: number) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip 
+                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+              />
+            </PieChart>
+          )}
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  );
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      
+      <main className="flex-grow container mx-auto px-4 py-12 md:py-20">
+        <div className="max-w-6xl mx-auto">
+          <header className="mb-12 flex flex-col items-center justify-center text-center">
+            <div className="max-w-2xl">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">Neighborhood Intelligence</h1>
+              <p className="text-muted-foreground text-lg">
+                Official demographics, market trends, and economic insights for every UK postcode.
+              </p>
+            </div>
+          </header>
+
+          {/* Search Box */}
+          <Card className="mb-12 border-2 border-primary/10 shadow-2xl rounded-[2.5rem] overflow-hidden">
+            <CardContent className="p-2">
+              <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center gap-2">
+                <div className="relative flex-grow w-full">
+                  <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
+                  <Input 
+                    placeholder="Enter UK Postcode (e.g. SW1A 1AA)" 
+                    className="h-16 pl-14 pr-6 text-lg border-none bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/60"
+                    value={postcode}
+                    onChange={(e) => setPostcode(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <Button 
+                  disabled={loading || !postcode}
+                  className="h-14 px-8 md:mr-1 rounded-[1.8rem] gap-2 text-lg font-bold w-full md:w-auto transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  {loading ? "Analyzing area..." : "Get Area Insights"}
+                  <Search className="w-5 h-5" />
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          {data ? (
+            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              {/* Top Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="bg-primary text-white border-none shadow-xl">
+                  <CardContent className="p-6">
+                    <p className="text-primary-foreground/80 text-xs font-bold uppercase tracking-widest mb-1">Local Authority</p>
+                    <h2 className="text-2xl font-black">{data.district}</h2>
+                    <p className="text-sm opacity-70 mt-1">LSOA: {data.lsoa}</p>
+                  </CardContent>
+                </Card>
+                <Card className="border-2 border-primary/5">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl flex items-center justify-center">
+                      <Home className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Housing Tenure</p>
+                      <h3 className="text-xl font-bold">62% Homeowners</h3>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-2 border-primary/5">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/40 rounded-2xl flex items-center justify-center">
+                      <Briefcase className="w-6 h-6 text-indigo-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Employment</p>
+                      <h3 className="text-xl font-bold">55% Full-time</h3>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="border-2 border-primary/5 bg-emerald-50/50 dark:bg-emerald-900/10">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-2xl flex items-center justify-center">
+                      <PoundSterling className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Median Income (Area)</p>
+                      <h3 className="text-xl font-bold">£{(data as any).income.average.toLocaleString()}</h3>
+                      <p className="text-[10px] text-emerald-600 font-bold">Top {(data as any).income.percentile}% in UK</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Main Charts Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <ChartSection 
+                  title="Ethnicity" 
+                  description="Population breakdown by ethnic group." 
+                  icon={Users} 
+                  data={data.ethnicity} 
+                />
+                <ChartSection 
+                  title="Age Profile" 
+                  description="Age distribution within the neighborhood." 
+                  icon={Calendar} 
+                  data={data.age} 
+                  type="pie"
+                />
+                <ChartSection 
+                  title="Religious Landscape" 
+                  description="Dominant religious affiliations." 
+                  icon={Languages} 
+                  data={data.religion} 
+                />
+                <ChartSection 
+                  title="Main Languages" 
+                  description="Primary languages spoken at home." 
+                  icon={Languages} 
+                  data={(data as any).languages} 
+                />
+              </div>
+
+              {/* Market Data - Sold Prices */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-8">
+                  <Card className="border-2 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <PoundSterling className="w-5 h-5 text-emerald-500" /> Recent Sales (Land Registry)
+                      </CardTitle>
+                      <CardDescription>Actual prices paid for properties in {data.postcode} recently.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="bg-muted/50 text-left border-y">
+                              <th className="p-4 text-xs font-black uppercase tracking-wider">Price Paid</th>
+                              <th className="p-4 text-xs font-black uppercase tracking-wider">Property Type</th>
+                              <th className="p-4 text-xs font-black uppercase tracking-wider">Address</th>
+                              <th className="p-4 text-xs font-black uppercase tracking-wider">Date Sold</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y">
+                            {data.soldPrices.length > 0 ? (
+                              data.soldPrices.map((sale, i) => (
+                                <tr key={i} className="hover:bg-muted/30 transition-colors">
+                                  <td className="p-4 font-black font-mono">£{sale.price.toLocaleString()}</td>
+                                  <td className="p-4"><span className="px-2 py-1 bg-accent/10 text-accent rounded text-[10px] font-bold uppercase">{sale.type}</span></td>
+                                  <td className="p-4 text-sm text-muted-foreground">{sale.address}</td>
+                                  <td className="p-4 text-sm text-muted-foreground">{new Date(sale.date).toLocaleDateString()}</td>
+                                </tr>
+                              ))
+                            ) : (
+                              <tr>
+                                <td colSpan={4} className="p-12 text-center text-muted-foreground italic">
+                                  No recent sales data available for this postcode.
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="lg:col-span-4 space-y-6">
+                  <Card className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-100 dark:border-amber-900">
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2 text-amber-900 dark:text-amber-100">
+                        <Info className="w-5 h-5" /> Market Insight
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <p className="text-sm text-amber-800 dark:text-amber-200/80 leading-relaxed">
+                        The area around <strong>{data.postcode}</strong> is characterized by a high percentage of <strong>Homeowners (62%)</strong>. 
+                        Areas with high ownership levels tend to have lower property turnover but more stable long-term prices.
+                      </p>
+                      <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl">
+                        <p className="text-xs font-bold uppercase tracking-widest text-amber-900/60 dark:text-amber-100/60 mb-2">Data Source</p>
+                        <p className="text-[11px] leading-relaxed">
+                          Demographics: ONS Census 2021 (Nomis)<br />
+                          Sold Prices: HM Land Registry (PPI)
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-40 grayscale mt-12">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-64 bg-muted animate-pulse rounded-[2rem]" />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

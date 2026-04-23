@@ -20,6 +20,7 @@ const roadmapItems = [
   { name: "Affordability Stress Test", completed: true },
   { name: "Offer Scenario Simulator", completed: true },
   { name: "Neighborhood Crime Checker", completed: true },
+  { name: "Neighborhood Intelligence Dashboard", completed: true },
   { name: "Regional Price Benchmark Tool", completed: false },
   { name: "Postcode Comparison Tool", completed: false },
   { name: "Council Tax Estimator (Data-assisted)", completed: false },

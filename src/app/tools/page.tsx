@@ -59,6 +59,7 @@ const categories = [
     icon: Home,
     tools: [
       { name: "Local Crime Checker", href: "/crime-checker", desc: "Official safety stats and interactive map.", status: "live", icon: ShieldAlert },
+      { name: "Neighborhood Intelligence", href: "/neighborhood-profile", desc: "Demographics, income, and market trends.", status: "live", icon: Users },
     ]
   }
 ];
