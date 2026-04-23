@@ -47,6 +47,7 @@ export default function NeighborhoodProfilePage() {
     if (!postcode) return;
 
     setLoading(true);
+    setData(null); // Clear previous results immediately
     try {
       const profile = await getNeighborhoodProfile(postcode);
       if (!profile) {

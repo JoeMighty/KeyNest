@@ -1,9 +1,4 @@
-export interface SoldPrice {
-  price: number;
-  date: string;
-  type: string;
-  address: string;
-}
+import { INCOME_BASELINES } from "./income-baselines";
 
 export interface CensusStat {
   name: string;
@@ -13,107 +8,117 @@ export interface CensusStat {
 
 export interface NeighborhoodProfile {
   postcode: string;
-  lsoa: string;
   district: string;
+  lsoa: string;
   ethnicity: CensusStat[];
   religion: CensusStat[];
   housing: CensusStat[];
-  age: CensusStat[];
   employment: CensusStat[];
   languages: CensusStat[];
+  age: CensusStat[];
   income: {
     average: number;
     percentile: number;
   };
-  soldPrices: SoldPrice[];
-}
-
-// Map Nomis Table IDs to readable categories
-const TABLES = {
-  ETHNICITY: "NM_2021_1", // Using simplified table IDs for this demonstration
-  RELIGION: "NM_2021_1",
-  HOUSING: "NM_2021_1",
-  EMPLOYMENT: "NM_2021_1",
-};
-
-export async function fetchLandRegistryData(postcode: string): Promise<SoldPrice[]> {
-  try {
-    const formattedPostcode = postcode.replace(/\s+/g, "").toUpperCase();
-    const response = await fetch(
-      `https://landregistry.data.gov.uk/data/ppi/address.json?postcode=${formattedPostcode}&_limit=10`
-    );
-    if (!response.ok) return [];
-    const data = await response.json();
-    
-    return data.result.items.map((item: any) => ({
-      price: item.pricePaid,
-      date: item.transactionDate,
-      type: item.propertyType.label,
-      address: `${item.paon} ${item.street}`,
-    })).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  } catch (error) {
-    console.error("Land Registry Error:", error);
-    return [];
-  }
+  soldPrices: any[];
 }
 
 async function fetchONSCensusData(datasetId: string, areaCode: string, dimension: string): Promise<CensusStat[]> {
   try {
-    // We use the Nomis API for reliable Census 2021 data at Local Authority level
-    const url = `https://www.nomisweb.co.uk/api/v01/dataset/${datasetId}.data.json?geography=${areaCode}&${dimension}=all&select=geography_name,${dimension}_name,obs_value`;
+    // We use the ONS Beta API for official Census 2021 data
+    const url = `https://api.beta.ons.gov.uk/v1/datasets/${datasetId}/editions/2021/versions/1/observations?area-type=ltla&area-code=${areaCode}`;
     
     const response = await fetch(url);
     if (!response.ok) return [];
     const data = await response.json();
     
-    if (!data.obs) return [];
+    if (!data.observations) return [];
 
-    return data.obs.map((obs: any) => ({
-      name: (obs[`${dimension}_name`] || "Other").split(':').pop()?.trim() || "Other",
-      value: obs.obs_value,
+    return data.observations.map((obs: any) => ({
+      name: obs.dimensions[dimension]?.label || "Other",
+      value: parseFloat(obs.observation),
       percentage: 0 
     })).filter((s: any) => !s.name.toLowerCase().includes("total") && !s.name.toLowerCase().includes("all categories"));
-
   } catch (error) {
-    console.error(`Nomis Fetch Error (${datasetId}):`, error);
+    console.error(`ONS Beta Fetch Error (${datasetId}):`, error);
     return [];
   }
 }
 
+async function fetchLandRegistryData(postcode: string) {
+  try {
+    // HM Land Registry Open Data API (Price Paid Data)
+    const url = `https://landregistry.data.gov.uk/data/ppi/address.json?postcode=${encodeURIComponent(postcode)}&_limit=10`;
+    const response = await fetch(url);
+    if (!response.ok) return [];
+    const data = await response.json();
+    
+    return (data.result?.items || []).map((item: any) => ({
+      price: item.amount,
+      date: item.date,
+      type: item.propertyType?.label || "Unknown",
+      address: `${item.paon || ""} ${item.saon || ""} ${item.street || ""}`.trim()
+    }));
+  } catch (error) {
+    return [];
+  }
+}
 
 export async function getNeighborhoodProfile(postcode: string): Promise<NeighborhoodProfile | null> {
   try {
-    const cleanPostcode = postcode.replace(/\s+/g, '').toUpperCase();
+    const cleanPostcode = postcode.replace(/\s/g, '').toUpperCase();
     
-    // 1. Get Area Codes from postcodes.io
-    const pcResponse = await fetch(`https://api.postcodes.io/postcodes/${cleanPostcode}`);
-    if (!pcResponse.ok) return null;
-    const pcData = await pcResponse.json();
-    const { lsoa, admin_district, codes } = pcData.result;
-    const ladCode = codes.admin_district;
+    // 1. Get geography details (LAD and LSOA)
+    const geoResponse = await fetch(`https://api.postcodes.io/postcodes/${cleanPostcode}`);
+    if (!geoResponse.ok) return null;
+    const geoData = await geoResponse.json();
+    
+    const ladCode = geoData.result.codes.admin_district;
+    const districtName = geoData.result.admin_district;
+    const lsoaName = geoData.result.lsoa;
 
-    // 2. Fetch Sold Prices (REAL DATA)
-    const soldPrices = await fetchLandRegistryData(cleanPostcode);
+    // 2. Fetch Sold Prices
+    const soldPrices = await fetchLandRegistryData(geoData.result.postcode);
 
-    // 3. Fetch ALL Real Census Data (Nomis API)
-    // We fetch a few key datasets. For speed, we'll run these in parallel.
+    // 3. Fetch ALL Real Census Data (ONS Beta API)
     const [rawEth, rawRel, rawHou, rawEmp, rawLang, rawAge] = await Promise.all([
-      fetchONSCensusData('NM_2021_1', ladCode, 'ethnic_group_tb_20b'),
-      fetchONSCensusData('NM_2030_1', ladCode, 'religion_tb'),
-      fetchONSCensusData('NM_2054_1', ladCode, 'tenure_8b'),
-      fetchONSCensusData('NM_2066_1', ladCode, 'economic_activity_status_12b'),
-      fetchONSCensusData('NM_2024_1', ladCode, 'main_language_detailed'),
-      fetchONSCensusData('NM_2007_1', ladCode, 'resident_age_101a')
+      fetchONSCensusData('TS021', ladCode, 'ethnic_group_tb_20b'),
+      fetchONSCensusData('TS030', ladCode, 'religion_tb'),
+      fetchONSCensusData('TS054', ladCode, 'hh_tenure_9a'),
+      fetchONSCensusData('TS066', ladCode, 'economic_activity'),
+      fetchONSCensusData('TS024', ladCode, 'main_language_detailed'),
+      fetchONSCensusData('TS007', ladCode, 'resident_age_101a')
     ]);
-
 
     const process = (raw: CensusStat[], limit: number = 5) => {
       const total = raw.reduce((acc, curr) => acc + curr.value, 0);
       if (total === 0) return [];
-      return raw.map(i => ({
-        ...i,
-        percentage: Number(((i.value / total) * 100).toFixed(1))
-      })).sort((a, b) => b.value - a.value).slice(0, limit);
+      
+      return raw
+        .map(s => ({ ...s, percentage: (s.value / total) * 100 }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, limit);
+    };
+
+    const aggregateAge = (raw: CensusStat[]) => {
+      const groups = [
+        { name: "0-17", min: 0, max: 17, value: 0 },
+        { name: "18-34", min: 18, max: 34, value: 0 },
+        { name: "35-54", min: 35, max: 54, value: 0 },
+        { name: "55-74", min: 55, max: 74, value: 0 },
+        { name: "75+", min: 75, max: 200, value: 0 }
+      ];
+
+      raw.forEach(s => {
+        const ageMatch = s.name.match(/\d+/);
+        const age = ageMatch ? parseInt(ageMatch[0]) : -1;
+        if (age === -1) return;
+        const group = groups.find(g => age >= g.min && age <= g.max);
+        if (group) group.value += s.value;
+      });
+
+      const total = groups.reduce((acc, curr) => acc + curr.value, 0);
+      return groups.map(g => ({ name: g.name, value: g.value, percentage: total > 0 ? (g.value / total) * 100 : 0 }));
     };
 
     const ethnicity = process(rawEth, 5);
@@ -121,106 +126,41 @@ export async function getNeighborhoodProfile(postcode: string): Promise<Neighbor
     const housing = process(rawHou, 4);
     const employment = process(rawEmp, 5);
     const languages = process(rawLang, 4);
+    const age = aggregateAge(rawAge);
     
-    // Group ages into buckets
-    const ageBuckets = [
-      { name: "0-17", value: 0 },
-      { name: "18-34", value: 0 },
-      { name: "35-54", value: 0 },
-      { name: "55-74", value: 0 },
-      { name: "75+", value: 0 },
-    ];
+    // 4. District-Aware Income Baseline
+    const incomeBaseline = INCOME_BASELINES[ladCode] || INCOME_BASELINES['DEFAULT'];
+    const seededIncome = getSeededValue(cleanPostcode, incomeBaseline.median, incomeBaseline.range);
     
-    rawAge.forEach(a => {
-      const val = parseInt(a.name);
-      if (isNaN(val)) return;
-      if (val < 18) ageBuckets[0].value += a.value;
-      else if (val < 35) ageBuckets[1].value += a.value;
-      else if (val < 55) ageBuckets[2].value += a.value;
-      else if (val < 75) ageBuckets[3].value += a.value;
-      else ageBuckets[4].value += a.value;
-    });
-    
-    const ageTotal = ageBuckets.reduce((acc, curr) => acc + curr.value, 0);
-    const age = ageBuckets.map(b => ({
-      ...b,
-      percentage: Number(((b.value / ageTotal) * 100).toFixed(1))
-    }));
-
     return {
-      postcode: pcData.result.postcode,
-      lsoa: lsoa,
-      district: admin_district,
-      ethnicity: ethnicity.length > 0 ? ethnicity : [
-        { name: "White", value: 0, percentage: 75 },
-        { name: "Asian", value: 0, percentage: 12 }
-      ],
-      religion: religion.length > 0 ? religion : [
-        { name: "Christian", value: 0, percentage: 45 },
-        { name: "No Religion", value: 0, percentage: 38 }
-      ],
-      housing: housing.length > 0 ? housing : [
-        { name: "Owned", value: 0, percentage: 62 },
-        { name: "Rented", value: 0, percentage: 38 }
-      ],
-      age,
+      postcode: geoData.result.postcode,
+      district: districtName,
+      lsoa: lsoaName,
+      ethnicity,
+      religion,
+      housing,
       employment,
       languages,
+      age,
       income: {
-        // High-fidelity estimator based on the actual local authority data context
-        average: getSeededValue(cleanPostcode, 32000, 75000, 26, admin_district),
-        percentile: getSeededValue(cleanPostcode, 40, 98, 27, admin_district),
+        average: seededIncome,
+        percentile: Math.round((seededIncome / 80000) * 100),
       },
-
       soldPrices
     };
-
   } catch (error) {
-    console.error("Neighborhood Profile Error:", error);
+    console.error("Neighborhood Profile Fetch Error:", error);
     return null;
   }
-}// Helper for deterministic "random" numbers based on postcode
-function getSeededValue(seed: string, min: number, max: number, offset: number = 0, district?: string): number {
-  // Use official LTLA baseline if available
-  const baselines: Record<string, number> = {
-    "Westminster": 52000,
-    "Kensington and Chelsea": 65000,
-    "City of London": 75000,
-    "Camden": 48000,
-    "Richmond upon Thames": 55000,
-    "Manchester": 32000,
-    "Birmingham": 30000,
-    "Leeds": 33000,
-    "Bristol, City of": 36000,
-    "Oxford": 42000,
-    "Cambridge": 45000,
-    "Edinburgh, City of": 38000,
-    "Glasgow City": 31000,
-    "Cardiff": 32000,
-    "Newcastle upon Tyne": 30000,
-    "Liverpool": 28000,
-    "Sheffield": 29000,
-    "Nottingham": 27000,
-    "Brighton and Hove": 38000,
-  };
+}
 
-  const baseline = district ? baselines[district] : null;
-  const range = max - min;
-  
+function getSeededValue(seed: string, median: number, range: number): number {
   let hash = 0;
-  const fullSeed = seed + offset.toString();
-  for (let i = 0; i < fullSeed.length; i++) {
-    hash = (hash << 5) - hash + fullSeed.charCodeAt(i);
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash << 5) - hash + seed.charCodeAt(i);
     hash |= 0;
   }
   const absHash = Math.abs(hash);
-  
-  // If we have a baseline, we use it as the center of the estimate
-  if (baseline) {
-    const variance = (absHash % 10000) - 5000; // +/- 5000 variance for the specific neighborhood
-    return baseline + variance;
-  }
-
-  return min + (absHash % (range + 1));
+  const variance = (absHash % range) - (range / 2);
+  return median + variance;
 }
-
