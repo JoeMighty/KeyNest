@@ -32,10 +32,10 @@ export function Navbar() {
 
   return (
     <nav className={cn(
-      "sticky top-0 z-50 w-full transition-all duration-300",
+      "fixed top-0 z-50 w-full transition-all duration-300",
       scrolled 
-        ? "border-b border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl h-16" 
-        : cn("h-20", isHome ? "bg-transparent border-transparent" : "bg-white dark:bg-slate-950 border-b")
+        ? "border-b border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl h-16 shadow-sm" 
+        : cn("h-24", isHome ? "bg-transparent border-transparent" : "bg-background border-b")
     )}>
       <div className="container mx-auto px-4 h-full flex items-center justify-between">
         <div className="flex items-center gap-12">
@@ -45,7 +45,7 @@ export function Navbar() {
             </div>
             <span className={cn(
               "font-bold text-2xl tracking-tighter transition-colors",
-              !scrolled && isHome ? "text-white" : "text-slate-950 dark:text-white"
+              !scrolled && isHome ? "text-white" : "text-foreground"
             )}>
               KeyNest
             </span>
@@ -60,7 +60,7 @@ export function Navbar() {
                   "text-sm font-semibold transition-all hover:text-primary relative py-2",
                   pathname === item.href 
                     ? "text-primary after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary after:rounded-full" 
-                    : (!scrolled && isHome ? "text-white/80 hover:text-white" : "text-slate-600 dark:text-slate-400")
+                    : (!scrolled && isHome ? "text-white/90 hover:text-white" : "text-muted-foreground hover:text-foreground")
                 )}
               >
                 {item.name}
@@ -84,7 +84,10 @@ export function Navbar() {
           )}
           
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
+            className={cn(
+              "md:hidden p-2 rounded-lg transition-colors",
+              !scrolled && isHome ? "text-white hover:bg-white/10" : "hover:bg-muted"
+            )}
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

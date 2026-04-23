@@ -69,7 +69,7 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mb-14 leading-relaxed font-light"
             >
-              The definitive, privacy-first toolkit for the UK market. <br className="hidden md:block" /> Every calculator, checklist, and generator you need—100% free.
+              The definitive, privacy-first toolkit for the UK market. <br className="hidden md:block" /> Every calculator, checklist, and generator you need - 100% free.
             </motion.p>
             
             <motion.div 
