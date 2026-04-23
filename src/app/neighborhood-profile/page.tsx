@@ -200,10 +200,11 @@ export default function NeighborhoodProfilePage() {
                       <PoundSterling className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Median Income (Area)</p>
+                      <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider text-right">Area Income Estimate</p>
                       <h3 className="text-xl font-bold">£{(data as any).income.average.toLocaleString()}</h3>
                       <p className="text-[10px] text-emerald-600 font-bold">Top {(data as any).income.percentile}% in UK</p>
                     </div>
+
                   </CardContent>
                 </Card>
               </div>

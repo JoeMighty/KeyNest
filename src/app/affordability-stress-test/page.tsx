@@ -137,9 +137,10 @@ export default function AffordabilityStressTest() {
                   {/* Interest Rate */}
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <Label className="text-sm font-medium">Current Interest Rate</Label>
+                      <Label className="text-sm font-medium italic opacity-70">Projected Interest Rate</Label>
                       <span className="text-lg font-bold font-mono">{currentRate}%</span>
                     </div>
+
                     <Slider 
                       value={[currentRate]} 
                       onValueChange={([v]) => setCurrentRate(v)}

@@ -157,9 +157,10 @@ export default function MovingCostsPage() {
                     <Truck className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold">Total Budget</h3>
-                    <p className="text-slate-400 text-xs uppercase tracking-widest font-bold">Moving Day essentials</p>
+                    <h3 className="text-xl font-bold italic opacity-80">Estimated Total</h3>
+                    <p className="text-slate-400 text-xs uppercase tracking-widest font-bold">Moving Day Budget</p>
                   </div>
+
                 </div>
                 
                 <div className="text-5xl font-black font-mono mb-8 tracking-tighter">

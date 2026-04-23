@@ -127,8 +127,9 @@ export default function OfferScenarioSimulator() {
                     )}>
                       <h3 className="font-bold tracking-tight">{scenario.label}</h3>
                       <div className="flex items-center gap-2 bg-white/20 px-2 py-0.5 rounded text-[10px] font-black uppercase">
-                        {scenario.likelihood} Likelihood
+                        Estimated {scenario.likelihood}
                       </div>
+
                     </div>
                     
                     <CardContent className="p-6 flex-grow flex flex-col justify-between">
