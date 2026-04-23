@@ -153,6 +153,35 @@ export function calculateMortgage(
   };
 }
 
+export interface StressTestScenario {
+  rateIncrease: number;
+  newRate: number;
+  monthlyPayment: number;
+  extraCost: number;
+  percentageIncrease: number;
+}
+
+export function calculateStressTest(
+  principal: number,
+  baseRate: number,
+  termYears: number
+): StressTestScenario[] {
+  const basePayment = calculateMortgage(principal, baseRate, termYears).monthlyPayment;
+  const increases = [1, 2, 3, 5];
+  
+  return increases.map(inc => {
+    const newRate = baseRate + inc;
+    const newPayment = calculateMortgage(principal, newRate, termYears).monthlyPayment;
+    return {
+      rateIncrease: inc,
+      newRate,
+      monthlyPayment: newPayment,
+      extraCost: newPayment - basePayment,
+      percentageIncrease: ((newPayment - basePayment) / basePayment) * 100
+    };
+  });
+}
+
 export interface MonthlyCostResult {
   totalMonthly: number;
   mortgage: number;

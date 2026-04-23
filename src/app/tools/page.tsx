@@ -16,7 +16,8 @@ import {
   Clock, 
   PiggyBank,
   Truck,
-  Eye
+  Eye,
+  ShieldAlert
 } from "lucide-react";
 import Link from "next/link";
 
@@ -30,6 +31,7 @@ const categories = [
       { name: "Monthly Cost Estimator", href: "/monthly-cost-calculator", desc: "Beyond the mortgage.", status: "live" },
       { name: "Mortgage Overpayment", href: "/mortgage-overpayment", desc: "Save years and thousands.", status: "live", icon: Clock },
       { name: "Deposit Timeline", href: "/deposit-timeline", desc: "When will you reach your goal?", status: "live", icon: PiggyBank },
+      { name: "Affordability Stress Test", href: "/affordability-stress-test", desc: "Test your buffer for rate rises.", status: "live", icon: ShieldAlert },
     ]
   },
   {
