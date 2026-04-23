@@ -48,10 +48,10 @@ export default function HomePage() {
         {/* Bento Grid Tools */}
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
-            <div className="flex flex-col md:row items-end justify-between mb-12 gap-4">
-              <div className="max-w-xl">
-                <h2 className="text-3xl font-bold mb-4">The Launch Toolkit</h2>
-                <p className="text-muted-foreground">Start your property search with our most popular financial and planning tools.</p>
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-16 gap-6">
+              <div className="max-w-2xl">
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">The Launch Toolkit</h2>
+                <p className="text-lg text-slate-600 dark:text-slate-400">Start your property search with our most popular financial and planning tools.</p>
               </div>
               <Button variant="ghost" asChild>
                 <Link href="/tools">View All 30+ Tools <ArrowRight className="ml-2 w-4 h-4" /></Link>
