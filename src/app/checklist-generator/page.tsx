@@ -9,6 +9,7 @@ import { ftbChecklist } from "@/data/checklists";
 import { CheckSquare, Download, Printer, ListTodo } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { toast } from "sonner";
 
 export default function ChecklistPage() {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
@@ -22,24 +23,30 @@ export default function ChecklistPage() {
 
   const downloadPDF = async () => {
     if (!pdfRef.current) return;
-    
-    const element = pdfRef.current;
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
+    toast.promise(new Promise(async (resolve) => {
+      const element = pdfRef.current!;
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
+      
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("KeyNest-Checklist.pdf");
+      resolve(true);
+    }), {
+      loading: "Preparing your checklist...",
+      success: "Checklist downloaded!",
+      error: "Failed to generate PDF",
     });
-    
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgHeight * pdfWidth) / imgWidth;
-    
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-    pdf.save("KeyNest-Checklist.pdf");
   };
 
   const categories = ["Financials", "Search", "Legal", "Completion"];

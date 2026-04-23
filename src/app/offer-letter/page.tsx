@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { Copy, Download, Mail, Send } from "lucide-react";
 
 export default function OfferLetterPage() {
@@ -50,7 +52,7 @@ ${details.buyerName}
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(letterText);
-    alert("Copied to clipboard!");
+    toast.success("Copied to clipboard!");
   };
 
   return (
@@ -97,6 +99,16 @@ ${details.buyerName}
                   <div className="space-y-2">
                     <Label htmlFor="buyer">Your Name</Label>
                     <Input id="buyer" value={details.buyerName} onChange={(e) => updateDetail("buyerName", e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="solicitor">Solicitor Details</Label>
+                    <Textarea 
+                      id="solicitor" 
+                      value={details.solicitorDetails} 
+                      onChange={(e) => updateDetail("solicitorDetails", e.target.value)} 
+                      placeholder="Name, address, and contact details..."
+                      className="min-h-[100px]"
+                    />
                   </div>
                 </CardContent>
               </Card>

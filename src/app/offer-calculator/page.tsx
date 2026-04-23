@@ -159,10 +159,10 @@ export default function OfferCalculatorPage() {
               </Card>
 
               <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border border-blue-100 dark:border-blue-800">
-                <h4 className="font-bold mb-2 flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                <h4 className="font-bold mb-2 flex items-center gap-2 text-slate-900 dark:text-blue-200">
                   Negotiation Tip
                 </h4>
-                <p className="text-sm text-blue-700 dark:text-blue-300">
+                <p className="text-sm text-slate-700 dark:text-blue-300 leading-relaxed">
                   Always justify your offer. If you're offering below asking, mention specific works needed or recent similar sales in the area. Being a "proceedable" buyer (mortgage in principle ready, no chain) is as good as cash to some sellers.
                 </p>
               </div>

@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: "A comprehensive, no-login platform offering calculators, planners, and downloadable tools for UK home buyers. Built for speed, clarity, and SEO.",
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,6 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster position="bottom-right" />
         </ThemeProvider>
       </body>
     </html>
