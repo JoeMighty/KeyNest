@@ -20,9 +20,10 @@ interface CrimeMapProps {
   lat: number;
   lng: number;
   crimes: any[];
+  radius: number;
 }
 
-export default function CrimeMap({ lat, lng, crimes }: CrimeMapProps) {
+export default function CrimeMap({ lat, lng, crimes, radius }: CrimeMapProps) {
   return (
     <div className="h-[400px] w-full rounded-2xl overflow-hidden border-2 border-primary/10 shadow-inner bg-muted/20">
       <MapContainer 
@@ -46,7 +47,7 @@ export default function CrimeMap({ lat, lng, crimes }: CrimeMapProps) {
         {/* General Area Circle */}
         <Circle 
           center={[lat, lng]} 
-          radius={500} 
+          radius={radius} 
           pathOptions={{ fillColor: 'blue', fillOpacity: 0.1, color: 'blue', weight: 1, dashArray: '5, 10' }} 
         />
 

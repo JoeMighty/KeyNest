@@ -52,7 +52,8 @@ export async function getCrimes(lat: number, lng: number): Promise<CrimeData[]> 
   try {
     // The Police API usually has a 1-2 month lag. 
     // If we don't provide a date, it returns the latest available.
-    const response = await fetch(`https://data.police.uk/api/crimes-at-location?lat=${lat}&lng=${lng}`);
+    // crimes-street/all-crime provides a 1-mile radius search (roughly)
+    const response = await fetch(`https://data.police.uk/api/crimes-street/all-crime?lat=${lat}&lng=${lng}`);
     if (!response.ok) return [];
     return await response.json();
   } catch (error) {

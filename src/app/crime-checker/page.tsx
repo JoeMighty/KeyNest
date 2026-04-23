@@ -31,6 +31,7 @@ const CrimeMap = dynamic(() => import("@/components/tools/crime-map"), {
 
 export default function CrimeChecker() {
   const [postcode, setPostcode] = useState("");
+  const [radius, setRadius] = useState(500);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<{
     location: PostcodeResult;
@@ -51,16 +52,28 @@ export default function CrimeChecker() {
       }
 
       const crimes = await getCrimes(location.latitude, location.longitude);
-      const summary = groupCrimesByCategory(crimes);
       
-      setResults({ location, crimes, summary });
-      toast.success(`Found ${crimes.length} incidents reported in the last month.`);
+      // Filter crimes by the selected radius (if they have coordinates)
+      // The API returns crimes in a roughly 1-mile grid, so we filter locally for precision.
+      const filteredCrimes = crimes.filter(crime => {
+        const dLat = parseFloat(crime.location.latitude) - location.latitude;
+        const dLng = parseFloat(crime.location.longitude) - location.longitude;
+        // Approximation: 1 degree ~ 111km
+        const distance = Math.sqrt(dLat * dLat + dLng * dLng) * 111000;
+        return distance <= radius;
+      });
+
+      const summary = groupCrimesByCategory(filteredCrimes);
+      
+      setResults({ location, crimes: filteredCrimes, summary });
+      toast.success(`Found ${filteredCrimes.length} incidents within ${radius}m.`);
     } catch (error) {
       toast.error("Could not fetch crime data. The police API might be down.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -80,24 +93,42 @@ export default function CrimeChecker() {
           {/* Search Box */}
           <Card className="mb-12 border-2 border-primary/10 shadow-2xl rounded-[2.5rem] overflow-hidden">
             <CardContent className="p-2">
-              <form onSubmit={handleSearch} className="flex flex-col md:row items-center gap-2">
-                <div className="relative flex-grow w-full">
-                  <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary w-5 h-5" />
-                  <Input 
-                    placeholder="Enter UK Postcode (e.g. SW1A 1AA)" 
-                    className="h-16 pl-14 pr-6 text-lg border-none bg-transparent focus-visible:ring-0 placeholder:text-muted-foreground/60"
-                    value={postcode}
-                    onChange={(e) => setPostcode(e.target.value.toUpperCase())}
-                  />
-                </div>
-                <Button 
-                  disabled={loading || !postcode}
-                  className="h-14 px-8 md:mr-1 rounded-[1.8rem] gap-2 text-lg font-bold w-full md:w-auto transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  {loading ? "Fetching Data..." : "Check Safety"}
+              <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4">
+              <div className="md:col-span-4 relative">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
                   <Search className="w-5 h-5" />
-                </Button>
-              </form>
+                </div>
+                <Input 
+                  placeholder="Enter UK Postcode (e.g., SW1A 1AA)" 
+                  value={postcode}
+                  onChange={(e) => setPostcode(e.target.value.toUpperCase())}
+                  className="pl-12 h-14 rounded-2xl bg-muted/50 border-none text-lg shadow-inner"
+                />
+              </div>
+
+              <div className="md:col-span-5 bg-muted/50 rounded-2xl px-6 py-2 flex flex-col justify-center">
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Search Radius</Label>
+                  <span className="text-sm font-bold font-mono text-primary">{radius}m</span>
+                </div>
+                <Slider 
+                  value={[radius]} 
+                  onValueChange={([v]) => setRadius(v)}
+                  min={250}
+                  max={2000}
+                  step={250}
+                  className="py-2"
+                />
+              </div>
+
+              <Button 
+                type="submit"
+                disabled={loading}
+                className="md:col-span-3 h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {loading ? "Searching..." : "Check Safety"}
+              </Button>
+            </form>
             </CardContent>
           </Card>
 
@@ -153,6 +184,7 @@ export default function CrimeChecker() {
                       lat={results.location.latitude} 
                       lng={results.location.longitude} 
                       crimes={results.crimes}
+                      radius={radius}
                     />
                     <CardContent className="p-4 bg-muted/20 border-t flex items-center justify-between">
                       <p className="text-xs text-muted-foreground italic">
@@ -161,7 +193,7 @@ export default function CrimeChecker() {
                       <div className="flex gap-2">
                         <div className="flex items-center gap-1">
                           <div className="w-2 h-2 rounded-full bg-blue-500" />
-                          <span className="text-[10px]">500m Radius</span>
+                          <span className="text-[10px]">{radius}m Radius</span>
                         </div>
                       </div>
                     </CardContent>
