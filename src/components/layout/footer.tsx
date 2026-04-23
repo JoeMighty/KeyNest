@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Github } from "lucide-react";
 
 const footerLinks = {
   Tools: [
@@ -32,9 +33,23 @@ export function Footer() {
               </div>
               <span className="font-bold text-xl tracking-tight">KeyNest</span>
             </Link>
-            <p className="text-sm text-muted-foreground max-w-xs">
+            <p className="text-sm text-muted-foreground max-w-xs mb-6">
               Everything you need to buy your first home in the UK. Speed, clarity, and zero login required.
             </p>
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://github.com/JoeMighty/KeyNest" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+              >
+                <Github className="w-5 h-5" />
+                <span className="text-sm font-medium">Open Source</span>
+              </a>
+              <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground bg-muted/50 border px-2 py-1 rounded-md">
+                v2.1.0
+              </span>
+            </div>
           </div>
           
           {Object.entries(footerLinks).map(([category, links]) => (
