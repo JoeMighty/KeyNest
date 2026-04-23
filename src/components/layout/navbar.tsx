@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calculator, CheckSquare, FileText, Menu, X, Moon, Sun } from "lucide-react";
+import { Home, Calculator, CheckSquare, FileText, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
@@ -17,12 +16,9 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -70,19 +66,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          {mounted && (
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className={cn(
-                "p-2 rounded-lg transition-colors",
-                !scrolled && isHome ? "text-white hover:bg-white/10" : "hover:bg-muted"
-              )}
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </button>
-          )}
-          
           <button
             className={cn(
               "md:hidden p-2 rounded-lg transition-colors",
