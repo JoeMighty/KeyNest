@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Copy, Download, Mail } from "lucide-react";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 
 export default function OfferLetterPage() {
   const previewRef = useRef<HTMLDivElement>(null);

@@ -20,6 +20,11 @@ export interface NeighborhoodProfile {
   housing: CensusStat[];
   age: CensusStat[];
   employment: CensusStat[];
+  languages: CensusStat[];
+  income: {
+    average: number;
+    percentile: number;
+  };
   soldPrices: SoldPrice[];
 }
 

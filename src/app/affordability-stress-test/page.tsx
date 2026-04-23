@@ -21,8 +21,8 @@ import {
 import { calculateMortgage, calculateStressTest, StressTestScenario } from "@/lib/calculators";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function AffordabilityStressTest() {
   const [loanAmount, setLoanAmount] = useState(250000);
@@ -71,8 +71,7 @@ export default function AffordabilityStressTest() {
       doc.text(`Monthly Household Income: £${monthlyIncome.toLocaleString()}`, 20, 63);
     }
 
-    // @ts-ignore
-    doc.autoTable({
+    autoTable(doc, {
       startY: 75,
       head: [['Rate Increase', 'New Rate', 'Monthly Payment', 'Extra Cost/Month', 'Affordability']],
       body: scenarios.map(s => [

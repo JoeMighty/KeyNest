@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ftbChecklist } from "@/data/checklists";
 import { CheckSquare, Download, ListTodo, Plus, Trash2 } from "lucide-react";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 
 interface CustomItem {
