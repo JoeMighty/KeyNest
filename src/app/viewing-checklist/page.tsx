@@ -51,26 +51,24 @@ export default function ViewingChecklistPage() {
   const downloadPDF = (ecoMode: boolean = false) => {
     const doc = new jsPDF();
     
-    if (!ecoMode) {
-      doc.setFillColor(37, 99, 235);
-      doc.roundedRect(20, 15, 12, 12, 3, 3, "F");
-      doc.setTextColor(255, 255, 255);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
-      doc.text("K", 26, 23, { align: "center" });
-    }
-    
-    doc.setTextColor(ecoMode ? 0 : 37, ecoMode ? 0 : 99, ecoMode ? 0 : 235);
-    doc.setFontSize(22);
+    // Minimal Header Branding
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
-    doc.text("KeyNest", ecoMode ? 20 : 35, 25);
+    doc.text("KeyNest", 20, 25);
     
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(100, 100, 100);
-    doc.text("House Viewing Checklist", 20, 38);
+    doc.setTextColor(120, 120, 120);
+    doc.text("House Viewing Checklist", 20, 32);
+    
+    if (ecoMode) {
+      doc.setTextColor(34, 197, 94);
+      doc.setFontSize(8);
+      doc.text("Eco-friendly Edition", 20, 36);
+    }
 
-    let y = 55;
+    let y = 50;
     viewingChecklistData.forEach(section => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
@@ -80,14 +78,17 @@ export default function ViewingChecklistPage() {
       
       section.items.forEach(item => {
         const isChecked = checkedItems.includes(item.id);
+        doc.setDrawColor(200);
         doc.rect(20, y - 4, 4, 4); // Checkbox
         if (isChecked) {
+          doc.setDrawColor(0, 0, 0);
           doc.line(20, y - 4, 24, y);
           doc.line(24, y - 4, 20, y);
         }
         
         doc.setFont("helvetica", "bold");
         doc.setFontSize(11);
+        doc.setTextColor(isChecked ? 150 : 0);
         doc.text(item.task, 28, y);
         y += 5;
         doc.setFont("helvetica", "normal");
@@ -96,7 +97,7 @@ export default function ViewingChecklistPage() {
         doc.text(item.description, 28, y);
         y += 10;
         
-        if (y > 270) {
+        if (y > 275) {
           doc.addPage();
           y = 20;
         }
@@ -104,7 +105,12 @@ export default function ViewingChecklistPage() {
       y += 5;
     });
     
-    doc.save(`KeyNest_Viewing_Checklist_${ecoMode ? 'eco' : 'full'}.pdf`);
+    // Minimal Footer
+    doc.setFontSize(8);
+    doc.setTextColor(180, 180, 180);
+    doc.text(`Generated via KeyNest. No login required.`, 20, 285);
+    
+    doc.save(`KeyNest_Viewing_Checklist.pdf`);
     toast.success("Checklist Downloaded!");
   };
 

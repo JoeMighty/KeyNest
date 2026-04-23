@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { Copy, Download, Mail } from "lucide-react";
+import { Copy, Download, Mail } from "lucide-material";
 import jsPDF from "jspdf";
 
 export default function OfferLetterPage() {
@@ -60,11 +60,23 @@ ${details.buyerName}
   const downloadPDF = () => {
     const doc = new jsPDF();
     
+    // Minimal Header Branding
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("KeyNest", 20, 25);
+    
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(120, 120, 120);
+    doc.text("Formal Property Offer", 20, 32);
+    
     // Add content to PDF
     const lines = doc.splitTextToSize(letterText, 170);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
-    doc.text(lines, 20, 30);
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text(lines, 20, 50);
     
     // Save the PDF
     doc.save(`Offer_Letter_${details.propertyAddress.replace(/[^a-z0-9]/gi, '_')}.pdf`);
