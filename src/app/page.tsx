@@ -78,10 +78,10 @@ export default function HomePage() {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-6"
             >
-              <Button size="lg" className="rounded-2xl px-12 h-18 text-xl font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 bg-white text-slate-950 hover:bg-slate-100" asChild>
+              <Button size="lg" className="rounded-2xl px-12 h-18 text-xl font-bold shadow-2xl transition-all hover:scale-105 active:scale-95 bg-white text-slate-950 hover:bg-slate-50 border-none" asChild>
                 <Link href="/tools">Get Started Now <ArrowRight className="ml-2 w-6 h-6" /></Link>
               </Button>
-              <Button variant="outline" size="lg" className="rounded-2xl px-12 h-18 text-xl font-bold border-white/20 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
+              <Button size="lg" className="rounded-2xl px-12 h-18 text-xl font-bold border border-white/30 text-white bg-white/5 hover:bg-white/10 backdrop-blur-md transition-all hover:scale-105 active:scale-95" asChild>
                 <Link href="/roadmap">View Roadmap</Link>
               </Button>
             </motion.div>
