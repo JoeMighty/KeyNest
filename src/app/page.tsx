@@ -96,7 +96,7 @@ export default function Home() {
           </div>
 
           {/* Floating Feature Icons for Visual Polish */}
-          <div className="absolute bottom-10 left-10 hidden lg:flex items-center gap-4 text-slate-500 animate-in fade-in slide-in-from-left-4 duration-1000 delay-500">
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden sm:flex items-center gap-4 text-slate-400 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
             <Lock className="w-4 h-4" />
             <span className="text-xs font-bold uppercase tracking-widest">Privacy First</span>
             <div className="w-px h-4 bg-slate-800 mx-2" />
