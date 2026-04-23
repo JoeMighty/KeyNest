@@ -12,54 +12,63 @@ const portals = [
     url: "https://www.rightmove.co.uk",
     description: "The UK's largest and most popular property portal. If a house is for sale, it's almost certainly listed here.",
     color: "from-blue-600 to-blue-800",
+    logoKey: "rightmove.png",
   },
   {
     name: "Zoopla",
     url: "https://www.zoopla.co.uk",
     description: "Great for comprehensive house price estimates, historical sold prices, and a massive inventory of homes.",
     color: "from-purple-600 to-indigo-800",
+    logoKey: "zoopla.png",
   },
   {
     name: "OnTheMarket",
     url: "https://www.onthemarket.com",
     description: "Many estate agents list their properties here 24 hours or more before they appear on Rightmove or Zoopla.",
     color: "from-red-500 to-red-700",
+    logoKey: "onthemarket.png",
   },
   {
     name: "PrimeLocation",
     url: "https://www.primelocation.com",
     description: "Focused primarily on the middle and upper tiers of the property market. Great for premium homes.",
     color: "from-slate-700 to-slate-900",
+    logoKey: "primelocation.png",
   },
   {
     name: "Jitty",
     url: "https://jitty.com",
     description: "A modern, AI-powered property search engine that reads floorplans and lets you search for highly specific features.",
     color: "from-emerald-500 to-teal-700",
+    logoKey: "jitty.png",
   },
   {
     name: "Purplebricks",
     url: "https://www.purplebricks.co.uk",
     description: "The UK's leading online estate agent. You can sometimes find properties here listed directly by the sellers.",
     color: "from-purple-500 to-fuchsia-700",
+    logoKey: "purplebricks.png",
   },
   {
     name: "Home.co.uk",
     url: "https://www.home.co.uk",
     description: "A comprehensive property search engine with extensive market data, average asking prices, and time-on-market metrics.",
     color: "from-sky-500 to-sky-700",
+    logoKey: "home.png",
   },
   {
     name: "PropertyPal",
     url: "https://www.propertypal.com",
     description: "The number one property portal for Northern Ireland, featuring almost every home for sale in the region.",
     color: "from-rose-500 to-rose-700",
+    logoKey: "propertypal.png",
   },
   {
     name: "Auction House",
     url: "https://www.auctionhouse.co.uk",
     description: "The UK's largest property auction company. Ideal for finding renovation projects or below-market-value homes.",
     color: "from-orange-500 to-orange-700",
+    logoKey: "auctionhouse.png",
   },
 ];
 
@@ -88,7 +97,7 @@ export default function PortalsPage() {
                   <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center p-2 shadow-xl relative z-10 group-hover:scale-110 transition-transform duration-500">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
-                      src={`https://logo.clearbit.com/${new URL(portal.url).hostname}`} 
+                      src={`/logos/${portal.logoKey}`} 
                       alt={`${portal.name} logo`} 
                       className="w-full h-full object-contain rounded-full"
                       onError={(e) => {
