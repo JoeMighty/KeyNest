@@ -9,9 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { calculateMortgage, calculateMonthlyCost } from "@/lib/calculators";
 import { formatCurrency } from "@/lib/utils";
-import { Download, PieChart, Home, Zap, ShieldCheck } from "lucide-react";
+import { Download, PieChart, Home, Zap, ShieldCheck, PlusCircle, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
+
+interface CustomCost {
+  id: string;
+  name: string;
+  amount: number;
+}
 
 export default function MonthlyCostPage() {
   // Mortgage Inputs
@@ -27,6 +33,19 @@ export default function MonthlyCostPage() {
   const [serviceCharge, setServiceCharge] = useState<number>(0);
   const [insurance, setInsurance] = useState<number>(50);
   const [maintenance, setMaintenance] = useState<number>(100);
+  const [customCosts, setCustomCosts] = useState<CustomCost[]>([]);
+
+  const addCustomCost = () => {
+    setCustomCosts([...customCosts, { id: Math.random().toString(36).substr(2, 9), name: "New Cost", amount: 0 }]);
+  };
+
+  const removeCustomCost = (id: string) => {
+    setCustomCosts(customCosts.filter(i => i.id !== id));
+  };
+
+  const updateCustomCost = (id: string, updates: Partial<CustomCost>) => {
+    setCustomCosts(customCosts.map(i => i.id === id ? { ...i, ...updates } : i));
+  };
 
   const result = useMemo(() => {
     const mortgagePayment = calculateMortgage(loanAmount, interestRate, term).monthlyPayment;
@@ -38,9 +57,10 @@ export default function MonthlyCostPage() {
       broadband,
       serviceCharge,
       insurance,
-      maintenance
+      maintenance,
+      customCosts
     );
-  }, [loanAmount, interestRate, term, councilTax, energy, water, broadband, serviceCharge, insurance, maintenance]);
+  }, [loanAmount, interestRate, term, councilTax, energy, water, broadband, serviceCharge, insurance, maintenance, customCosts]);
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -195,9 +215,48 @@ export default function MonthlyCostPage() {
                       <Input id="ins" type="number" value={insurance} onChange={(e) => setInsurance(Number(e.target.value))} isNumeric />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="maint">Maintenance Fund (Monthly)</Label>
-                    <Input id="maint" type="number" value={maintenance} onChange={(e) => setMaintenance(Number(e.target.value))} isNumeric />
+                    <div className="space-y-2">
+                      <Label htmlFor="maint">Maintenance Fund (Monthly)</Label>
+                      <Input id="maint" type="number" value={maintenance} onChange={(e) => setMaintenance(Number(e.target.value))} isNumeric />
+                    </div>
+
+                    {customCosts.map((cost) => (
+                      <div key={cost.id} className="flex gap-4 items-center group pt-2">
+                        <div className="flex-grow">
+                          <Input 
+                            value={cost.name} 
+                            onChange={(e) => updateCustomCost(cost.id, { name: e.target.value })}
+                            className="font-medium bg-muted/30 border-none h-10 rounded-lg focus:bg-background transition-all"
+                          />
+                        </div>
+                        <div className="w-24 relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono text-xs">£</span>
+                          <Input 
+                            type="number" 
+                            value={cost.amount} 
+                            onChange={(e) => updateCustomCost(cost.id, { amount: Number(e.target.value) })}
+                            className="pl-6 font-mono h-10 rounded-lg bg-muted/30 border-none focus:bg-background transition-all"
+                            isNumeric
+                          />
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => removeCustomCost(cost.id)}
+                          className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 h-10 w-10 shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                    
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-dashed border-2 text-muted-foreground hover:text-primary hover:border-primary/50 transition-all mt-4"
+                      onClick={addCustomCost}
+                    >
+                      <PlusCircle className="w-4 h-4 mr-2" /> Add Custom Cost
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

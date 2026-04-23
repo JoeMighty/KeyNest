@@ -165,6 +165,7 @@ export interface MonthlyCostResult {
     amount: number;
     category: string;
   }[];
+  customCosts?: { name: string; amount: number }[];
 }
 
 export function calculateMonthlyCost(
@@ -175,9 +176,11 @@ export function calculateMonthlyCost(
   broadband: number,
   serviceCharge: number,
   insurance: number,
-  maintenance: number
+  maintenance: number,
+  customCosts: { name: string; amount: number }[] = []
 ): MonthlyCostResult {
-  const totalMonthly = mortgage + councilTax + energy + water + broadband + serviceCharge + insurance + maintenance;
+  const customTotal = customCosts.reduce((sum, item) => sum + item.amount, 0);
+  const totalMonthly = mortgage + councilTax + energy + water + broadband + serviceCharge + insurance + maintenance + customTotal;
 
   return {
     totalMonthly,
@@ -195,6 +198,7 @@ export function calculateMonthlyCost(
       { name: "Service Charge", amount: serviceCharge, category: "Housing" },
       { name: "Home Insurance", amount: insurance, category: "Insurance" },
       { name: "Maintenance Fund", amount: maintenance, category: "Housing" },
+      ...customCosts.map(c => ({ name: c.name, amount: c.amount, category: "Custom" }))
     ],
   };
 }
