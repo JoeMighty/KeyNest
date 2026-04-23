@@ -5,7 +5,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, Download, Info } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { CheckSquare, Download, Info, Plus, Trash2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { toast } from "sonner";
 
@@ -38,13 +39,43 @@ const viewingChecklistData = [
   }
 ];
 
+interface CustomItem {
+  id: string;
+  category: string;
+  task: string;
+  description: string;
+}
+
 export default function ViewingChecklistPage() {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [customItems, setCustomItems] = useState<CustomItem[]>([]);
+  const [newTask, setNewTask] = useState("");
+  const [newDesc, setNewDesc] = useState("");
 
   const toggleItem = (id: string) => {
     setCheckedItems(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
+  };
+
+  const addCustomItem = () => {
+    if (!newTask.trim()) return;
+    const newItem: CustomItem = {
+      id: `custom_${Math.random().toString(36).substr(2, 9)}`,
+      category: "Personal Checks",
+      task: newTask,
+      description: newDesc,
+    };
+    setCustomItems([...customItems, newItem]);
+    setNewTask("");
+    setNewDesc("");
+    toast.success("Custom task added!");
+  };
+
+  const removeCustomItem = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCustomItems(customItems.filter(i => i.id !== id));
+    setCheckedItems(checkedItems.filter(i => i !== id));
   };
 
   const downloadPDF = () => {
@@ -65,7 +96,16 @@ export default function ViewingChecklistPage() {
     doc.line(20, 35, 190, 35);
 
     let y = 50;
-    viewingChecklistData.forEach(section => {
+    
+    const allSections = [...viewingChecklistData];
+    if (customItems.length > 0) {
+      allSections.push({
+        category: "Personal Checks",
+        items: customItems
+      });
+    }
+
+    allSections.forEach(section => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
@@ -87,11 +127,16 @@ export default function ViewingChecklistPage() {
         doc.setTextColor(isChecked ? 150 : 0);
         doc.text(item.task, 28, y);
         y += 5;
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
-        doc.text(item.description, 28, y);
-        y += 10;
+        
+        if (item.description) {
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9);
+          doc.setTextColor(100, 100, 100);
+          doc.text(item.description, 28, y);
+          y += 10;
+        } else {
+          y += 5;
+        }
         
         if (y > 275) {
           doc.addPage();
@@ -161,6 +206,75 @@ export default function ViewingChecklistPage() {
                 </div>
               </div>
             ))}
+
+            {/* Custom Items Section */}
+            <div>
+              <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <div className="w-2 h-8 bg-purple-500 rounded-full" />
+                Personal Checks
+              </h2>
+              <div className="grid gap-4 mb-6">
+                {customItems.map((item) => (
+                  <div 
+                    key={item.id}
+                    onClick={() => toggleItem(item.id)}
+                    className={`flex items-start gap-4 p-6 rounded-2xl border-2 transition-all cursor-pointer group ${
+                      checkedItems.includes(item.id) 
+                        ? "border-primary bg-primary/5 ring-4 ring-primary/5" 
+                        : "border-border hover:border-primary/40 bg-card"
+                    }`}
+                  >
+                    <div className={`mt-1 w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${
+                      checkedItems.includes(item.id) ? "bg-primary border-primary" : "border-muted-foreground/30"
+                    }`}>
+                      {checkedItems.includes(item.id) && <CheckSquare className="w-4 h-4 text-white" />}
+                    </div>
+                    <div className="flex-grow">
+                      <h3 className={`font-bold text-lg mb-1 ${checkedItems.includes(item.id) ? "line-through opacity-60" : ""}`}>
+                        {item.task}
+                      </h3>
+                      {item.description && (
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={(e) => removeCustomItem(item.id, e)}
+                      className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <Card className="border-dashed border-2 bg-muted/20">
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row gap-4 items-start">
+                    <div className="flex-grow space-y-4 w-full">
+                      <Input 
+                        placeholder="Task name (e.g., Check mobile signal)" 
+                        value={newTask}
+                        onChange={(e) => setNewTask(e.target.value)}
+                        className="bg-background"
+                      />
+                      <Input 
+                        placeholder="Optional description" 
+                        value={newDesc}
+                        onChange={(e) => setNewDesc(e.target.value)}
+                        className="bg-background"
+                      />
+                    </div>
+                    <Button onClick={addCustomItem} className="w-full md:w-auto h-10 shrink-0 gap-2">
+                      <Plus className="w-4 h-4" /> Add Check
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
           <div className="mt-16 p-8 bg-slate-900 rounded-3xl text-white flex flex-col md:row items-center gap-8">

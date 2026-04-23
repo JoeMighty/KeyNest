@@ -64,7 +64,7 @@ export default function Home() {
       <main className="flex-grow">
         {/* Hero Section - High Polish */}
         <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-slate-950 text-white">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-20 scale-105" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center opacity-30 scale-105" />
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/60 to-slate-950" />
           
           <div className="container relative z-10 mx-auto px-4">
