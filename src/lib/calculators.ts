@@ -286,6 +286,44 @@ export function calculateOfferStrategy(
   };
 }
 
+export interface OfferScenario {
+  label: string;
+  price: number;
+  difference: number;
+  depositAmount: number;
+  loanAmount: number;
+  likelihood: "Low" | "Moderate" | "High";
+  description: string;
+}
+
+export function calculateOfferScenarios(
+  askingPrice: number,
+  depositPercent: number
+): OfferScenario[] {
+  const scenarios = [
+    { label: "Cheeky Low-Ball", percent: 0.90, likelihood: "Low" as const, desc: "Testing the seller's resolve. High risk of rejection." },
+    { label: "Competitive Under", percent: 0.95, likelihood: "Moderate" as const, desc: "A strong starting point in a neutral market." },
+    { label: "Fair Market Value", percent: 1.00, likelihood: "High" as const, desc: "Matching the asking price. Usually expected." },
+    { label: "The Deal Closer", percent: 1.02, likelihood: "High" as const, desc: "Securing the property in a hot market." },
+  ];
+
+  return scenarios.map(s => {
+    const price = Math.round((askingPrice * s.percent) / 500) * 500;
+    const depositAmount = price * (depositPercent / 100);
+    const loanAmount = price - depositAmount;
+    
+    return {
+      label: s.label,
+      price,
+      difference: price - askingPrice,
+      depositAmount,
+      loanAmount,
+      likelihood: s.likelihood,
+      description: s.desc
+    };
+  });
+}
+
 export interface RentVsBuyResult {
   totalRentCost: number;
   totalBuyCost: number;

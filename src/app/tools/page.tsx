@@ -40,6 +40,7 @@ const categories = [
     tools: [
       { name: "Offer Calculator", href: "/offer-calculator", desc: "Strategic bidding advice.", status: "live" },
       { name: "Property Comparison", href: "/compare-properties", desc: "Compare up to 4 properties side-by-side.", status: "live" },
+      { name: "Offer Scenario Simulator", href: "/offer-scenario-simulator", desc: "Simulate different bidding outcomes.", status: "live" },
       { name: "Rent vs Buy", href: "/rent-vs-buy", desc: "The ultimate long-term comparison.", status: "live" },
     ]
   },

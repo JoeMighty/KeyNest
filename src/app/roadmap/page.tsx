@@ -17,7 +17,7 @@ const roadmapItems = [
   { name: "Deposit Savings Timeline", completed: true },
   { name: "House Viewing Checklist (PDF)", completed: true },
   { name: "Moving Cost Estimator", completed: true },
-  { name: "Affordability Stress Test", completed: false },
+  { name: "Affordability Stress Test", completed: true },
   { name: "Offer Scenario Simulator", completed: false },
   { name: "Regional Price Benchmark Tool", completed: false },
   { name: "Postcode Comparison Tool", completed: false },
