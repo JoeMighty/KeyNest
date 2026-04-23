@@ -128,12 +128,12 @@ ${details.buyerName}
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="flex-grow p-8 sm:p-12 bg-white dark:bg-slate-950 font-serif whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200">
-                  <div className="bg-slate-50 dark:bg-slate-900/50 p-6 rounded-lg border border-slate-100 dark:border-slate-800 shadow-inner">
+                <CardContent className="flex-grow p-8 sm:p-12 bg-card font-serif whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-card-foreground">
+                  <div className="bg-muted p-6 rounded-lg border border-border shadow-inner">
                     {letterText}
                   </div>
                 </CardContent>
-                <div className="p-6 border-t bg-slate-50 dark:bg-slate-900/50 flex flex-col sm:row gap-4">
+                <div className="p-6 border-t bg-muted/50 flex flex-col sm:row gap-4">
                   <Button className="w-full gap-2 h-12 rounded-xl text-base shadow-lg shadow-primary/20">
                     <Mail className="w-4 h-4" /> Email Agent
                   </Button>
