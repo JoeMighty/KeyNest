@@ -1,5 +1,7 @@
 import { INCOME_BASELINES } from "./income-baselines";
 import { DEMOGRAPHIC_PROFILES, DemographicProfile } from "./demographic-profiles";
+import { UK_CENSUS_DB } from "@/data/uk-census-db";
+
 
 export interface CensusStat {
   name: string;
@@ -77,8 +79,34 @@ export async function getNeighborhoodProfile(postcode: string): Promise<Neighbor
     // Fetch live Land Registry data
     const soldPrices = await fetchLandRegistryData(geoData.result.postcode);
 
-    // Primary: Attempt Live ONS Census Fetch
+    // Primary: Check our high-fidelity local database first (Official Census 2021)
+    const localData = (UK_CENSUS_DB as any)[ladCode];
+    
+    if (localData) {
+      const incomeBase = INCOME_BASELINES[ladCode] || INCOME_BASELINES['DEFAULT'];
+      const seededIncome = getSeededValue(cleanPostcode, incomeBase.median, incomeBase.range);
+      
+      return {
+        postcode: geoData.result.postcode,
+        district: districtName,
+        lsoa: lsoaName,
+        ethnicity: localData.ethnicity,
+        religion: localData.religion,
+        housing: localData.housing,
+        employment: localData.employment,
+        languages: localData.languages,
+        age: localData.age,
+        income: {
+          average: seededIncome,
+          percentile: Math.round((seededIncome / 85000) * 100),
+        },
+        soldPrices
+      };
+    }
+
+    // Secondary: Attempt Live ONS Census Fetch for areas not in our local DB
     let [rawEth, rawRel, rawHou, rawEmp, rawLang, rawAge] = await Promise.all([
+
       fetchONSCensusData('TS021', ladCode, 'ethnic_group_tb_20b'),
       fetchONSCensusData('TS030', ladCode, 'religion_tb'),
       fetchONSCensusData('TS054', ladCode, 'hh_tenure_9a'),
