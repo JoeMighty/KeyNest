@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="https://raw.githubusercontent.com/JoeMighty/KeyNest/main/public/logo-placeholder.png" alt="KeyNest Logo" width="120" height="120" />
+  
+  # 🏡 KeyNest
+  ### Everything you need to buy your first home in the UK
+  
+  [![Next.js](https://img.shields.io/badge/Next.js-16.2-blue?style=plastic&logo=next.js)](https://nextjs.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=plastic&logo=tailwind-css)](https://tailwindcss.com/)
+  [![License](https://img.shields.io/badge/License-MIT-green?style=plastic)](LICENSE)
+  [![Vercel](https://img.shields.io/badge/Deployment-Vercel-black?style=plastic&logo=vercel)](https://vercel.com/)
+  
+  **No Login. No Tracking. Just Clarity.**
+</div>
 
-## Getting Started
+---
 
-First, run the development server:
+## 🌟 Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**KeyNest** is a comprehensive, open-source toolkit designed specifically for the UK property market. We provide the tools first-time buyers actually need—calculators, checklists, and generators—all in one fast, privacy-focused platform.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Launch Toolkit (Phase 1)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Our initial release features 7 core tools to kickstart your journey:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **💰 Stamp Duty Calculator**: Up-to-date 2024/25 SDLT rates for all regions.
+- **📈 Total Cost Calculator**: Estimate the total cash needed (Deposit + Fees).
+- **📅 Monthly Budgeter**: Plan your mortgage, bills, and maintenance.
+- **⚖️ Rent vs Buy**: Long-term financial comparison with equity tracking.
+- **🎯 Offer Strategist**: Data-driven advice on how much to bid.
+- **📝 FTB Checklist**: Interactive guide with high-quality **PDF Export**.
+- **✉️ Offer Letter Generator**: Professional templates for estate agents.
 
-## Learn More
+## 🗺️ Roadmap (30+ Tools)
 
-To learn more about Next.js, take a look at the following resources:
+We are building the most complete buyer toolkit in the UK.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 📊 Decision & Comparison
+- Property Comparison Tool (Multi-property side-by-side)
+- Deposit Savings Timeline
+- Mortgage Overpayment Calculator
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 📝 Checklists & PDF Generators
+- House Viewing Checklist (PDF)
+- Completion Day Guide
+- New Build Snagging Checklist
+- Moving Checklist Generator
 
-## Deploy on Vercel
+### 📍 Location & Research
+- Council Tax Estimator (Regional dataset assisted)
+- Postcode Comparison Tool
+- Area Cost Benchmark Tool
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 🧠 Advanced Helpers
+- Affordability Stress Test
+- Offer Scenario Simulator
+- Home Setup Cost Calculator
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS 4.0
+- **Components**: 21st.dev / Custom UI
+- **PDF Engine**: jsPDF + html2canvas
+- **State**: Client-side (Local Storage)
+
+## 🔒 Privacy First
+
+We don't collect your data.
+- **No Login Required**: Start using any tool instantly.
+- **Client-Side Processing**: Your financial data never leaves your browser.
+- **No Tracking**: We don't use invasive cookies or tracking scripts.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request or open an issue for new tool ideas.
+
+---
+
+<div align="center">
+  Built with ❤️ for the UK Home Buying Community
+</div>
