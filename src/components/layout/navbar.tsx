@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calculator, CheckSquare, FileText, Menu, X } from "lucide-react";
+import { Home, Calculator, CheckSquare, FileText, Map, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "Tools", href: "/tools", icon: Calculator },
+  { name: "Portals", href: "/portals", icon: Map },
   { name: "Checklists", href: "/checklist-generator", icon: CheckSquare },
   { name: "Offer Letter", href: "/offer-letter", icon: FileText },
 ];
