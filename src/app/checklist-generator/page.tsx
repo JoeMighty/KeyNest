@@ -55,7 +55,7 @@ export default function ChecklistPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-grow pt-24 container mx-auto px-4 py-8 md:py-12">
+      <main className="flex-grow container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-4xl mx-auto">
           <header className="mb-8 flex flex-col md:row items-center justify-between gap-4">
             <div className="text-center md:text-left">
