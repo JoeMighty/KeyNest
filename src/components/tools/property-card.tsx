@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 export interface Property {
   id: string;
   name: string;
+  postcode?: string;
+  listingUrl?: string;
+  imageUrl?: string;
   price: number;
   beds: number;
   baths: number;
@@ -26,8 +29,19 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, onUpdate, onRemove }: PropertyCardProps) {
   return (
-    <Card className="relative overflow-hidden border-2 border-primary/5 hover:border-primary/20 transition-all shadow-lg group">
-      <CardHeader className="bg-primary/5 dark:bg-primary/10 pb-4">
+    <Card className="relative overflow-hidden border-2 border-primary/5 hover:border-primary/20 transition-all shadow-lg group flex flex-col h-full">
+      {property.imageUrl ? (
+        <div 
+          className="h-32 w-full bg-cover bg-center relative" 
+          style={{ backgroundImage: `url(${property.imageUrl})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        </div>
+      ) : (
+        <div className="h-2 w-full bg-primary/20" />
+      )}
+      
+      <CardHeader className="bg-primary/5 dark:bg-primary/10 pb-4 relative">
         <div className="flex justify-between items-start gap-4">
           <div className="space-y-1 flex-grow">
             <Input 
@@ -36,16 +50,21 @@ export function PropertyCard({ property, onUpdate, onRemove }: PropertyCardProps
               className="font-bold text-lg h-9 bg-transparent border-none p-0 focus-visible:ring-0"
               placeholder="Property Nickname"
             />
-            <div className="flex items-center gap-1 text-muted-foreground">
+            <div className="flex items-center gap-1 text-muted-foreground relative group/pin">
               <MapPin className="w-3 h-3" />
-              <span className="text-[10px] uppercase font-bold tracking-widest">Entry {property.id.slice(0, 3)}</span>
+              <Input 
+                value={property.postcode || ""} 
+                onChange={(e) => onUpdate(property.id, { postcode: e.target.value })}
+                className="text-[10px] uppercase font-bold tracking-widest h-6 bg-transparent border-none p-0 focus-visible:ring-0 w-full"
+                placeholder="ENTER POSTCODE"
+              />
             </div>
           </div>
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={() => onRemove(property.id)}
-            className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8"
+            className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 shrink-0 bg-background/50 hover:bg-destructive/10"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -119,24 +138,47 @@ export function PropertyCard({ property, onUpdate, onRemove }: PropertyCardProps
           </div>
         </div>
 
-        <div className="pt-4 border-t">
-          <Label className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-3 block">Gut Feel Rating</Label>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => onUpdate(property.id, { rating: star })}
-                className="transition-transform active:scale-90"
-              >
-                <Star 
-                  className={cn(
-                    "w-6 h-6 transition-colors",
-                    star <= property.rating ? "fill-primary text-primary" : "text-muted-foreground/30 hover:text-primary/50"
-                  )} 
-                />
-              </button>
-            ))}
+        <div className="pt-4 border-t space-y-4">
+          <div>
+            <Label className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground mb-3 block">Gut Feel Rating</Label>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => onUpdate(property.id, { rating: star })}
+                  className="transition-transform active:scale-90"
+                >
+                  <Star 
+                    className={cn(
+                      "w-6 h-6 transition-colors",
+                      star <= property.rating ? "fill-primary text-primary" : "text-muted-foreground/30 hover:text-primary/50"
+                    )} 
+                  />
+                </button>
+              ))}
+            </div>
           </div>
+          
+          <div className="space-y-2 pt-2 border-t border-dashed">
+            <Input 
+              placeholder="Listing URL (Rightmove/Zoopla)" 
+              value={property.listingUrl || ""} 
+              onChange={(e) => onUpdate(property.id, { listingUrl: e.target.value })}
+              className="h-8 text-xs bg-muted/50"
+            />
+            <Input 
+              placeholder="Image URL" 
+              value={property.imageUrl || ""} 
+              onChange={(e) => onUpdate(property.id, { imageUrl: e.target.value })}
+              className="h-8 text-xs bg-muted/50"
+            />
+          </div>
+          
+          {property.listingUrl && (
+            <Button variant="outline" className="w-full text-xs h-8" asChild>
+              <a href={property.listingUrl} target="_blank" rel="noopener noreferrer">View Listing</a>
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
