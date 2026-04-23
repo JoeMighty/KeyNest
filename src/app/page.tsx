@@ -28,10 +28,10 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest mb-6">
               <Sparkles className="w-3 h-3" /> Built for UK Home Buyers
             </div>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-700 dark:from-white dark:via-slate-200 dark:to-slate-400 bg-clip-text text-transparent">
               Your Journey Home, <br /> Simplified.
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
               Everything you need to buy your first home in the UK. Calculators, checklists, and planning tools. No login, no fees, just clarity.
             </p>
             <div className="flex flex-col sm:row items-center justify-center gap-4">
