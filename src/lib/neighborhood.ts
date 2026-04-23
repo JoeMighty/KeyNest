@@ -59,26 +59,27 @@ export async function fetchLandRegistryData(postcode: string): Promise<SoldPrice
 
 async function fetchONSCensusData(datasetId: string, areaCode: string, dimension: string): Promise<CensusStat[]> {
   try {
-    // We use the Local Authority level (LTLA) for consistent official data
-    const url = `https://api.beta.ons.gov.uk/v1/datasets/${datasetId}/editions/2021/versions/1/observations?area-type=ltla&area-code=${areaCode}`;
+    // We use the Nomis API for reliable Census 2021 data at Local Authority level
+    const url = `https://www.nomisweb.co.uk/api/v01/dataset/${datasetId}.data.json?geography=${areaCode}&${dimension}=all&select=geography_name,${dimension}_name,obs_value`;
+    
     const response = await fetch(url);
     if (!response.ok) return [];
     const data = await response.json();
     
-    // Map ONS observations to our CensusStat format
-    // Observations usually have a 'value' and 'dimensions'
-    if (!data.observations) return [];
+    if (!data.obs) return [];
 
-    return data.observations.map((obs: any) => ({
-      name: obs.dimensions[dimension]?.label || "Other",
-      value: obs.observation,
-      percentage: 0 // Will calculate after
-    })).filter((s: any) => s.name !== "Total");
+    return data.obs.map((obs: any) => ({
+      name: (obs[`${dimension}_name`] || "Other").split(':').pop()?.trim() || "Other",
+      value: obs.obs_value,
+      percentage: 0 
+    })).filter((s: any) => !s.name.toLowerCase().includes("total") && !s.name.toLowerCase().includes("all categories"));
+
   } catch (error) {
-    console.error(`ONS Fetch Error (${datasetId}):`, error);
+    console.error(`Nomis Fetch Error (${datasetId}):`, error);
     return [];
   }
 }
+
 
 export async function getNeighborhoodProfile(postcode: string): Promise<NeighborhoodProfile | null> {
   try {
@@ -94,16 +95,17 @@ export async function getNeighborhoodProfile(postcode: string): Promise<Neighbor
     // 2. Fetch Sold Prices (REAL DATA)
     const soldPrices = await fetchLandRegistryData(cleanPostcode);
 
-    // 3. Fetch ALL Real Census Data (ONS API)
+    // 3. Fetch ALL Real Census Data (Nomis API)
     // We fetch a few key datasets. For speed, we'll run these in parallel.
     const [rawEth, rawRel, rawHou, rawEmp, rawLang, rawAge] = await Promise.all([
-      fetchONSCensusData('TS021', ladCode, 'ethnic_group_tb_20b'),
-      fetchONSCensusData('TS030', ladCode, 'religion_tb'),
-      fetchONSCensusData('TS054', ladCode, 'tenure_8b'),
-      fetchONSCensusData('TS066', ladCode, 'economic_activity_status_12b'),
-      fetchONSCensusData('TS024', ladCode, 'main_language_detailed'),
-      fetchONSCensusData('TS007', ladCode, 'resident_age_101a')
+      fetchONSCensusData('NM_2021_1', ladCode, 'ethnic_group_tb_20b'),
+      fetchONSCensusData('NM_2030_1', ladCode, 'religion_tb'),
+      fetchONSCensusData('NM_2054_1', ladCode, 'tenure_8b'),
+      fetchONSCensusData('NM_2066_1', ladCode, 'economic_activity_status_12b'),
+      fetchONSCensusData('NM_2024_1', ladCode, 'main_language_detailed'),
+      fetchONSCensusData('NM_2007_1', ladCode, 'resident_age_101a')
     ]);
+
 
     const process = (raw: CensusStat[], limit: number = 5) => {
       const total = raw.reduce((acc, curr) => acc + curr.value, 0);

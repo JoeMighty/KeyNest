@@ -195,7 +195,9 @@ export default function NeighborhoodProfilePage() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Housing Tenure</p>
-                      <h3 className="text-xl font-bold">62% Homeowners</h3>
+                      <h3 className="text-xl font-bold">
+                        {data.housing[0] ? `${Math.round(data.housing[0].percentage)}% ${data.housing[0].name}` : "Data Pending"}
+                      </h3>
                     </div>
                   </CardContent>
                 </Card>
@@ -206,8 +208,11 @@ export default function NeighborhoodProfilePage() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Employment</p>
-                      <h3 className="text-xl font-bold">55% Full-time</h3>
+                      <h3 className="text-xl font-bold">
+                        {data.employment[0] ? `${Math.round(data.employment[0].percentage)}% ${data.employment[0].name}` : "Data Pending"}
+                      </h3>
                     </div>
+
                   </CardContent>
                 </Card>
                 <Card className="border-2 border-primary/5 bg-emerald-50/50 dark:bg-emerald-900/10">
@@ -254,75 +259,31 @@ export default function NeighborhoodProfilePage() {
                 />
               </div>
 
-              {/* Market Data - Sold Prices */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div className="lg:col-span-8">
-                  <Card className="border-2 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <PoundSterling className="w-5 h-5 text-emerald-500" /> Recent Sales (Land Registry)
-                      </CardTitle>
-                      <CardDescription>Actual prices paid for properties in {data.postcode} recently.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="bg-muted/50 text-left border-y">
-                              <th className="p-4 text-xs font-black uppercase tracking-wider">Price Paid</th>
-                              <th className="p-4 text-xs font-black uppercase tracking-wider">Property Type</th>
-                              <th className="p-4 text-xs font-black uppercase tracking-wider">Address</th>
-                              <th className="p-4 text-xs font-black uppercase tracking-wider">Date Sold</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y">
-                            {data.soldPrices.length > 0 ? (
-                              data.soldPrices.map((sale, i) => (
-                                <tr key={i} className="hover:bg-muted/30 transition-colors">
-                                  <td className="p-4 font-black font-mono">£{sale.price.toLocaleString()}</td>
-                                  <td className="p-4"><span className="px-2 py-1 bg-accent/10 text-accent rounded text-[10px] font-bold uppercase">{sale.type}</span></td>
-                                  <td className="p-4 text-sm text-muted-foreground">{sale.address}</td>
-                                  <td className="p-4 text-sm text-muted-foreground">{new Date(sale.date).toLocaleDateString()}</td>
-                                </tr>
-                              ))
-                            ) : (
-                              <tr>
-                                <td colSpan={4} className="p-12 text-center text-muted-foreground italic">
-                                  No recent sales data available for this postcode.
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="lg:col-span-4 space-y-6">
-                  <Card className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-100 dark:border-amber-900">
-                    <CardHeader>
-                      <CardTitle className="text-lg flex items-center gap-2 text-amber-900 dark:text-amber-100">
-                        <Info className="w-5 h-5" /> Market Insight
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <p className="text-sm text-amber-800 dark:text-amber-200/80 leading-relaxed">
-                        The area around <strong>{data.postcode}</strong> is characterized by a high percentage of <strong>Homeowners (62%)</strong>. 
-                        Areas with high ownership levels tend to have lower property turnover but more stable long-term prices.
+              {/* Market Data Insight Card Only */}
+              <div className="max-w-3xl">
+                <Card className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-100 dark:border-amber-900">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2 text-amber-900 dark:text-amber-100">
+                      <Info className="w-5 h-5" /> Market Insight
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-amber-800 dark:text-amber-200/80 leading-relaxed">
+                      The area around <strong>{data.postcode}</strong> is characterized by a high percentage of <strong>{data.housing[0]?.name} ({Math.round(data.housing[0]?.percentage || 0)}%)</strong>. 
+                      Areas with high ownership levels tend to have lower property turnover but more stable long-term prices.
+                    </p>
+                    <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl">
+                      <p className="text-xs font-bold uppercase tracking-widest text-amber-900/60 dark:text-amber-100/60 mb-2">Data Source</p>
+                      <p className="text-[11px] leading-relaxed">
+                        Demographics: ONS Census 2021 (Official Observations)<br />
+                        LSOA: {data.lsoa}
                       </p>
-                      <div className="p-4 bg-white/50 dark:bg-black/20 rounded-xl">
-                        <p className="text-xs font-bold uppercase tracking-widest text-amber-900/60 dark:text-amber-100/60 mb-2">Data Source</p>
-                        <p className="text-[11px] leading-relaxed">
-                          Demographics: ONS Census 2021 (Nomis)<br />
-                          Sold Prices: HM Land Registry (PPI)
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
+
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-40 grayscale mt-12">
               {[1, 2, 3].map((i) => (
